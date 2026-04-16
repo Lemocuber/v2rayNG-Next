@@ -21,6 +21,7 @@ import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
 import androidx.core.content.ContextCompat
+import androidx.core.graphics.ColorUtils
 import androidx.core.view.GravityCompat
 import androidx.core.view.isVisible
 import androidx.lifecycle.lifecycleScope
@@ -52,6 +53,7 @@ import rikka.shizuku.Shizuku
 class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelectedListener {
     companion object {
         private const val REQUEST_CODE_SHIZUKU = 1001
+        private const val MUTED_DRAWER_ICON_ALPHA = 97
     }
 
     private val binding by lazy {
@@ -709,12 +711,13 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
                 title = getString(R.string.proxied_only_apps_settings)
                 setIcon(R.drawable.ic_proxied_only_apps_24dp)
             } else {
-                val mutedColor = ContextCompat.getColor(this@MainActivity, R.color.color_fab_inactive)
+                val defaultTextColor = binding.navView.itemTextColor?.defaultColor ?: currentTextColor
+                val mutedTextColor = ColorUtils.setAlphaComponent(defaultTextColor, MUTED_DRAWER_ICON_ALPHA)
                 title = SpannableString(getString(R.string.proxied_only_apps_settings)).apply {
-                    setSpan(ForegroundColorSpan(mutedColor), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                    setSpan(ForegroundColorSpan(mutedTextColor), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
                 }
                 icon = AppCompatResources.getDrawable(this@MainActivity, R.drawable.ic_proxied_only_apps_24dp)?.mutate()?.apply {
-                    setTint(mutedColor)
+                    alpha = MUTED_DRAWER_ICON_ALPHA
                 }
             }
         }

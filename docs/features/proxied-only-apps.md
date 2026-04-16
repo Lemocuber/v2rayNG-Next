@@ -11,7 +11,8 @@ Proxied Only Apps is a VPN-mode-only feature that uses a Shizuku user service to
 - The selection UI exposes search plus clipboard import/export only; bulk actions available in per-app proxy (`Select all`, `Invert selection`, `Auto select proxy app`) are intentionally hidden here.
 - The Proxied Only Apps selection list hides system apps by default. The top-right overflow menu exposes a `Show system apps` toggle that reveals them for the current screen session.
 - The navigation drawer uses a dedicated icon for Proxied Only Apps so it remains visually distinct from the broader Per-App Proxy settings entry.
-- The navigation drawer entry remains tappable even when requirements are unmet so the app can surface the `Shizuku permission and VPN mode are required for Proxied Only Apps` toast instead of silently swallowing taps on a disabled menu item. In that state it is visually muted using the shared `color_fab_inactive` resource rather than a hard-coded ad hoc color.
+- The navigation drawer entry remains tappable even when requirements are unmet so the app can surface the `Shizuku permission and VPN mode are required for Proxied Only Apps` toast instead of silently swallowing taps on a disabled menu item. In that state both the title and icon are dimmed by applying the same reduced alpha to their normal drawer colors.
+- The unavailable drawer entry uses alpha reduction rather than a runtime tint override because `NavigationView` reapplies its own icon tint when binding menu items.
 - VPN startup does not wait for Proxied Only Apps. The Shizuku apply step runs asynchronously after the VPN core starts.
 - If any package operation fails, the app shows a single short toast: `Failed to apply POA`.
 
