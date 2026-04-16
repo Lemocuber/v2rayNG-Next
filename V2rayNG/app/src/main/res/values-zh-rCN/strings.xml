@@ -139,6 +139,7 @@
     <string name="msg_downloading_content">正在下载内容</string>
     <string name="menu_item_export_proxy_app">导出至剪贴板</string>
     <string name="menu_item_import_proxy_app">从剪贴板导入</string>
+    <string name="menu_item_show_system_apps">显示系统应用</string>
     <string name="per_app_proxy_settings">分应用设置</string>
     <string name="per_app_proxy_settings_enable">启用分应用</string>
     <string name="proxied_only_apps_settings">仅代理时应用</string>

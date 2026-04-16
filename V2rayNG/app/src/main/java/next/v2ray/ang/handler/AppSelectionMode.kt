@@ -9,7 +9,7 @@ enum class AppSelectionMode(
     val enabledKey: String,
     val selectedSetKey: String,
     val invertKey: String,
-    private val includeSystemAppsInSelectionList: Boolean,
+    private val showSystemAppsByDefault: Boolean,
     @StringRes val titleRes: Int,
     @StringRes val enabledTextRes: Int,
     @StringRes val invertTextRes: Int,
@@ -20,7 +20,7 @@ enum class AppSelectionMode(
         enabledKey = AppConfig.PREF_PER_APP_PROXY,
         selectedSetKey = AppConfig.PREF_PER_APP_PROXY_SET,
         invertKey = AppConfig.PREF_BYPASS_APPS,
-        includeSystemAppsInSelectionList = true,
+        showSystemAppsByDefault = true,
         titleRes = R.string.per_app_proxy_settings,
         enabledTextRes = R.string.per_app_proxy_settings_enable,
         invertTextRes = R.string.switch_bypass_apps_mode,
@@ -31,14 +31,14 @@ enum class AppSelectionMode(
         enabledKey = AppConfig.PREF_PROXIED_ONLY_APPS,
         selectedSetKey = AppConfig.PREF_PROXIED_ONLY_APPS_SET,
         invertKey = AppConfig.PREF_PROXIED_ONLY_APPS_INVERT,
-        includeSystemAppsInSelectionList = false,
+        showSystemAppsByDefault = false,
         titleRes = R.string.proxied_only_apps_settings,
         enabledTextRes = R.string.proxied_only_apps_settings_enable,
         invertTextRes = R.string.switch_invert_mode,
         helpTextRes = R.string.summary_proxied_only_apps
     );
 
-    fun shouldIncludeInSelectionList(isSystemApp: Boolean): Boolean = includeSystemAppsInSelectionList || !isSystemApp
+    fun showsSystemAppsByDefault(): Boolean = showSystemAppsByDefault
 
     companion object {
         fun fromValue(value: String?) = entries.firstOrNull { it.value == value } ?: PER_APP_PROXY

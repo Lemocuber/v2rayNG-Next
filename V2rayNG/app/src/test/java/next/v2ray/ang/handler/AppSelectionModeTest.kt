@@ -6,14 +6,12 @@ import org.junit.Test
 
 class AppSelectionModeTest {
     @Test
-    fun `per app proxy keeps system apps in selection list`() {
-        assertTrue(AppSelectionMode.PER_APP_PROXY.shouldIncludeInSelectionList(isSystemApp = true))
-        assertTrue(AppSelectionMode.PER_APP_PROXY.shouldIncludeInSelectionList(isSystemApp = false))
+    fun `per app proxy shows system apps by default`() {
+        assertTrue(AppSelectionMode.PER_APP_PROXY.showsSystemAppsByDefault())
     }
 
     @Test
-    fun `proxied only apps hides system apps from selection list`() {
-        assertFalse(AppSelectionMode.PROXIED_ONLY_APPS.shouldIncludeInSelectionList(isSystemApp = true))
-        assertTrue(AppSelectionMode.PROXIED_ONLY_APPS.shouldIncludeInSelectionList(isSystemApp = false))
+    fun `proxied only apps hides system apps by default`() {
+        assertFalse(AppSelectionMode.PROXIED_ONLY_APPS.showsSystemAppsByDefault())
     }
 }

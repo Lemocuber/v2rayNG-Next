@@ -34,6 +34,8 @@ import java.text.Collator
 class PerAppProxyActivity : BaseActivity() {
     companion object {
         private const val EXTRA_MODE = "extra_mode"
+        private const val STATE_SHOW_SYSTEM_APPS = "state_show_system_apps"
+        private const val STATE_SEARCH_QUERY = "state_search_query"
 
         fun newIntent(context: Context, mode: AppSelectionMode) =
             Intent(context, PerAppProxyActivity::class.java).putExtra(EXTRA_MODE, mode.value)
@@ -45,9 +47,13 @@ class PerAppProxyActivity : BaseActivity() {
 
     private var adapter: PerAppProxyAdapter? = null
     private var appsAll: List<AppInfo>? = null
+    private var currentQuery = ""
+    private var showSystemApps = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        showSystemApps = savedInstanceState?.getBoolean(STATE_SHOW_SYSTEM_APPS) ?: mode.showsSystemAppsByDefault()
+        currentQuery = savedInstanceState?.getString(STATE_SEARCH_QUERY).orEmpty()
         setContentViewWithToolbar(binding.root, showHomeAsUp = true, title = getString(mode.titleRes))
 
         addCustomDividerToRecyclerView(binding.recyclerView, this, R.drawable.custom_divider)
@@ -82,36 +88,10 @@ class PerAppProxyActivity : BaseActivity() {
 
         lifecycleScope.launch {
             try {
-                val apps = withContext(Dispatchers.IO) {
-                    val appsList = AppManagerUtil.loadNetworkAppList(this@PerAppProxyActivity)
-                        .filter { mode.shouldIncludeInSelectionList(it.isSystemApp) }
-                    val selectedPackages = selectionStore.getAll()
-                    if (selectedPackages.isNotEmpty()) {
-                        appsList.forEach { app ->
-                            app.isSelected = if (selectedPackages.contains(app.packageName)) 1 else 0
-                        }
-                        appsList.sortedWith { p1, p2 ->
-                            when {
-                                p1.isSelected > p2.isSelected -> -1
-                                p1.isSelected < p2.isSelected -> 1
-                                p1.isSystemApp > p2.isSystemApp -> 1
-                                p1.isSystemApp < p2.isSystemApp -> -1
-                                p1.appName.lowercase() > p2.appName.lowercase() -> 1
-                                p1.appName.lowercase() < p2.appName.lowercase() -> -1
-                                p1.packageName > p2.packageName -> 1
-                                p1.packageName < p2.packageName -> -1
-                                else -> 0
-                            }
-                        }
-                    } else {
-                        val collator = Collator.getInstance()
-                        appsList.sortedWith(compareBy(collator) { it.appName })
-                    }
+                appsAll = withContext(Dispatchers.IO) {
+                    AppManagerUtil.loadNetworkAppList(this@PerAppProxyActivity)
                 }
-
-                appsAll = apps
-                adapter = PerAppProxyAdapter(apps, selectionStore)
-                binding.recyclerView.adapter = adapter
+                refreshVisibleApps()
             } catch (e: Exception) {
                 Log.e(ANG_PACKAGE, "Error loading apps", e)
             } finally {
@@ -126,16 +106,25 @@ class PerAppProxyActivity : BaseActivity() {
             menu.removeItem(R.id.select_all)
             menu.removeItem(R.id.invert_selection)
             menu.removeItem(R.id.select_proxy_app)
+            menu.findItem(R.id.show_system_apps)?.isChecked = showSystemApps
+        } else {
+            menu.removeItem(R.id.show_system_apps)
         }
 
         val searchItem = menu.findItem(R.id.search_view)
         if (searchItem != null) {
             val searchView = searchItem.actionView as SearchView
+            if (currentQuery.isNotEmpty()) {
+                searchItem.expandActionView()
+                searchView.setQuery(currentQuery, false)
+                searchView.clearFocus()
+            }
             searchView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
                 override fun onQueryTextSubmit(query: String?): Boolean = false
 
                 override fun onQueryTextChange(newText: String?): Boolean {
-                    filterProxyApp(newText.orEmpty())
+                    currentQuery = newText.orEmpty()
+                    refreshVisibleApps()
                     return false
                 }
             })
@@ -172,6 +161,13 @@ class PerAppProxyActivity : BaseActivity() {
 
         R.id.export_proxy_app -> {
             exportProxyApp()
+            true
+        }
+
+        R.id.show_system_apps -> {
+            item.isChecked = !item.isChecked
+            showSystemApps = item.isChecked
+            refreshVisibleApps()
             true
         }
 
@@ -283,18 +279,56 @@ class PerAppProxyActivity : BaseActivity() {
         val keyword = content.uppercase()
         if (keyword.isNotEmpty()) {
             appsAll?.forEach {
-                if (it.appName.uppercase().indexOf(keyword) >= 0 || it.packageName.uppercase().indexOf(keyword) >= 0) {
+                if (shouldDisplayApp(it) && (it.appName.uppercase().indexOf(keyword) >= 0 || it.packageName.uppercase().indexOf(keyword) >= 0)) {
                     apps.add(it)
                 }
             }
         } else {
-            appsAll?.forEach(apps::add)
+            appsAll?.forEach {
+                if (shouldDisplayApp(it)) apps.add(it)
+            }
         }
 
-        adapter = PerAppProxyAdapter(apps, selectionStore)
+        val selectedPackages = selectionStore.getAll()
+        val displayApps = if (selectedPackages.isNotEmpty()) {
+            apps.forEach { app ->
+                app.isSelected = if (selectedPackages.contains(app.packageName)) 1 else 0
+            }
+            apps.sortedWith { p1, p2 ->
+                when {
+                    p1.isSelected > p2.isSelected -> -1
+                    p1.isSelected < p2.isSelected -> 1
+                    p1.isSystemApp > p2.isSystemApp -> 1
+                    p1.isSystemApp < p2.isSystemApp -> -1
+                    p1.appName.lowercase() > p2.appName.lowercase() -> 1
+                    p1.appName.lowercase() < p2.appName.lowercase() -> -1
+                    p1.packageName > p2.packageName -> 1
+                    p1.packageName < p2.packageName -> -1
+                    else -> 0
+                }
+            }
+        } else {
+            val collator = Collator.getInstance()
+            apps.sortedWith(compareBy(collator) { it.appName })
+        }
+
+        adapter = PerAppProxyAdapter(displayApps, selectionStore)
         binding.recyclerView.adapter = adapter
         refreshData()
         return true
+    }
+
+    private fun refreshVisibleApps() {
+        filterProxyApp(currentQuery)
+    }
+
+    private fun shouldDisplayApp(appInfo: AppInfo): Boolean =
+        mode != AppSelectionMode.PROXIED_ONLY_APPS || showSystemApps || !appInfo.isSystemApp
+
+    override fun onSaveInstanceState(outState: Bundle) {
+        super.onSaveInstanceState(outState)
+        outState.putBoolean(STATE_SHOW_SYSTEM_APPS, showSystemApps)
+        outState.putString(STATE_SEARCH_QUERY, currentQuery)
     }
 
     @SuppressLint("NotifyDataSetChanged")
