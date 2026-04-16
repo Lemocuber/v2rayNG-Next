@@ -19,7 +19,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
-object ProxyOnlyAppsManager {
+object ProxiedOnlyAppsManager {
     private val excludedPackages = setOf(
         BuildConfig.APPLICATION_ID,
         "moe.shizuku.privileged.api",
@@ -28,7 +28,7 @@ object ProxyOnlyAppsManager {
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
     private val operationMutex = Mutex()
 
-    internal var serviceGateway: ProxyOnlyAppsServiceGateway = ProxyOnlyAppsUserServiceClient
+    internal var serviceGateway: ProxiedOnlyAppsServiceGateway = ProxiedOnlyAppsUserServiceClient
 
     fun handleVpnStart(context: Context) {
         val appContext = context.applicationContext
@@ -62,11 +62,11 @@ object ProxyOnlyAppsManager {
     private fun handleVpnStartLocked(context: Context) {
         recoverPreviousSessionIfNeededLocked()
         if (loadSession().active) {
-            Log.w(AppConfig.TAG, "ProxyOnlyApps: previous session still active, skipping start")
+            Log.w(AppConfig.TAG, "ProxiedOnlyApps: previous session still active, skipping start")
             return
         }
 
-        if (!SettingsManager.isVpnMode() || !MmkvManager.decodeSettingsBool(AppConfig.PREF_PROXY_ONLY_APPS, false)) {
+        if (!SettingsManager.isVpnMode() || !MmkvManager.decodeSettingsBool(AppConfig.PREF_PROXIED_ONLY_APPS, false)) {
             clearSession()
             return
         }
@@ -85,12 +85,12 @@ object ProxyOnlyAppsManager {
             return
         }
 
-        val appliedState = ProxyOnlyAppsOperationPlanner.stateOnStart(
-            MmkvManager.decodeSettingsBool(AppConfig.PREF_PROXY_ONLY_APPS_INVERT, false)
+        val appliedState = ProxiedOnlyAppsOperationPlanner.stateOnStart(
+            MmkvManager.decodeSettingsBool(AppConfig.PREF_PROXIED_ONLY_APPS_INVERT, false)
         )
         val failedPackages = serviceGateway.setPackagesState(targetPackages, appliedState)
         persistSession(
-            ProxyOnlyAppsSessionReducer.onStart(
+            ProxiedOnlyAppsSessionReducer.onStart(
                 requestedPackages = targetPackages,
                 appliedState = appliedState,
                 failedPackages = failedPackages
@@ -109,7 +109,7 @@ object ProxyOnlyAppsManager {
             session.appliedState?.reverse() ?: inferAppliedStateFromSettings().reverse()
         )
         persistSession(
-            ProxyOnlyAppsSessionReducer.onStop(
+            ProxiedOnlyAppsSessionReducer.onStop(
                 previousState = session,
                 failedPackages = failedPackages
             )
@@ -121,45 +121,45 @@ object ProxyOnlyAppsManager {
         if (loadSession().active) handleVpnStopLocked()
     }
 
-    private fun resolveTargetPackages(context: Context): Set<String> = ProxyOnlyAppsTargetResolver.resolve(
+    private fun resolveTargetPackages(context: Context): Set<String> = ProxiedOnlyAppsTargetResolver.resolve(
         installedPackages = AppManagerUtil.loadInstalledPackageNames(context),
-        selectedPackages = MmkvManager.decodeSettingsStringSet(AppConfig.PREF_PROXY_ONLY_APPS_SET)?.toSet().orEmpty(),
+        selectedPackages = MmkvManager.decodeSettingsStringSet(AppConfig.PREF_PROXIED_ONLY_APPS_SET)?.toSet().orEmpty(),
         excludedPackages = excludedPackages
     )
 
-    private fun loadSession(): ProxyOnlyAppsSessionState {
-        val appliedPackages = MmkvManager.decodeSettingsStringSet(AppConfig.PREF_PROXY_ONLY_APPS_LAST_APPLIED_SET)?.toSet().orEmpty()
-        val active = MmkvManager.decodeSettingsBool(AppConfig.PREF_PROXY_ONLY_APPS_SESSION_ACTIVE, false) && appliedPackages.isNotEmpty()
-        val appliedState = ProxyOnlyAppsPackageState.fromStorageValue(
-            MmkvManager.decodeSettingsString(AppConfig.PREF_PROXY_ONLY_APPS_LAST_APPLIED_STATE)
+    private fun loadSession(): ProxiedOnlyAppsSessionState {
+        val appliedPackages = MmkvManager.decodeSettingsStringSet(AppConfig.PREF_PROXIED_ONLY_APPS_LAST_APPLIED_SET)?.toSet().orEmpty()
+        val active = MmkvManager.decodeSettingsBool(AppConfig.PREF_PROXIED_ONLY_APPS_SESSION_ACTIVE, false) && appliedPackages.isNotEmpty()
+        val appliedState = ProxiedOnlyAppsPackageState.fromStorageValue(
+            MmkvManager.decodeSettingsString(AppConfig.PREF_PROXIED_ONLY_APPS_LAST_APPLIED_STATE)
         ) ?: inferAppliedStateFromSettings().takeIf { active }
 
-        return ProxyOnlyAppsSessionState(
+        return ProxiedOnlyAppsSessionState(
             active = active && appliedState != null,
             appliedPackages = appliedPackages,
             appliedState = appliedState
         )
     }
 
-    private fun inferAppliedStateFromSettings() = ProxyOnlyAppsOperationPlanner.stateOnStart(
-        MmkvManager.decodeSettingsBool(AppConfig.PREF_PROXY_ONLY_APPS_INVERT, false)
+    private fun inferAppliedStateFromSettings() = ProxiedOnlyAppsOperationPlanner.stateOnStart(
+        MmkvManager.decodeSettingsBool(AppConfig.PREF_PROXIED_ONLY_APPS_INVERT, false)
     )
 
-    private fun persistSession(session: ProxyOnlyAppsSessionState) {
-        MmkvManager.encodeSettings(AppConfig.PREF_PROXY_ONLY_APPS_SESSION_ACTIVE, session.active)
-        MmkvManager.encodeSettings(AppConfig.PREF_PROXY_ONLY_APPS_LAST_APPLIED_SET, session.appliedPackages.toMutableSet())
-        MmkvManager.encodeSettings(AppConfig.PREF_PROXY_ONLY_APPS_LAST_APPLIED_STATE, session.appliedState?.storageValue.orEmpty())
+    private fun persistSession(session: ProxiedOnlyAppsSessionState) {
+        MmkvManager.encodeSettings(AppConfig.PREF_PROXIED_ONLY_APPS_SESSION_ACTIVE, session.active)
+        MmkvManager.encodeSettings(AppConfig.PREF_PROXIED_ONLY_APPS_LAST_APPLIED_SET, session.appliedPackages.toMutableSet())
+        MmkvManager.encodeSettings(AppConfig.PREF_PROXIED_ONLY_APPS_LAST_APPLIED_STATE, session.appliedState?.storageValue.orEmpty())
     }
 
     private fun clearSession() {
-        MmkvManager.encodeSettings(AppConfig.PREF_PROXY_ONLY_APPS_SESSION_ACTIVE, false)
-        MmkvManager.encodeSettings(AppConfig.PREF_PROXY_ONLY_APPS_LAST_APPLIED_SET, mutableSetOf<String>())
-        MmkvManager.encodeSettings(AppConfig.PREF_PROXY_ONLY_APPS_LAST_APPLIED_STATE, "")
+        MmkvManager.encodeSettings(AppConfig.PREF_PROXIED_ONLY_APPS_SESSION_ACTIVE, false)
+        MmkvManager.encodeSettings(AppConfig.PREF_PROXIED_ONLY_APPS_LAST_APPLIED_SET, mutableSetOf<String>())
+        MmkvManager.encodeSettings(AppConfig.PREF_PROXIED_ONLY_APPS_LAST_APPLIED_STATE, "")
     }
 
     private fun showApplyFailureToast() {
         scope.launch(Dispatchers.Main) {
-            AngApplication.application.toastError(R.string.toast_poa_apply_failed)
+            AngApplication.application.toastError(R.string.toast_proxied_only_apps_apply_failed)
         }
     }
 
@@ -171,7 +171,7 @@ object ProxyOnlyAppsManager {
                 serviceInfo.service.className == V2RayVpnService::class.java.name
             }
         }.onFailure {
-            Log.w(AppConfig.TAG, "ProxyOnlyApps: failed to inspect running services", it)
+            Log.w(AppConfig.TAG, "ProxiedOnlyApps: failed to inspect running services", it)
         }.getOrDefault(false)
     }
 }

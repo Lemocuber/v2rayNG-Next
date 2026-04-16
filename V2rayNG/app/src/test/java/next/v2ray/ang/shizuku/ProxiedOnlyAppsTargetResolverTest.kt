@@ -3,10 +3,10 @@ package next.v2ray.ang.shizuku
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
-class ProxyOnlyAppsTargetResolverTest {
+class ProxiedOnlyAppsTargetResolverTest {
     @Test
     fun `returns selected packages after exclusions`() {
-        val targetPackages = ProxyOnlyAppsTargetResolver.resolve(
+        val targetPackages = ProxiedOnlyAppsTargetResolver.resolve(
             installedPackages = setOf("a", "b", "c"),
             selectedPackages = setOf("a", "c"),
             excludedPackages = setOf("c")
@@ -17,7 +17,7 @@ class ProxyOnlyAppsTargetResolverTest {
 
     @Test
     fun `does not invert the target set`() {
-        val targetPackages = ProxyOnlyAppsTargetResolver.resolve(
+        val targetPackages = ProxiedOnlyAppsTargetResolver.resolve(
             installedPackages = setOf("a", "b", "c"),
             selectedPackages = setOf("a"),
             excludedPackages = setOf("c")
@@ -28,7 +28,7 @@ class ProxyOnlyAppsTargetResolverTest {
 
     @Test
     fun `ignores unknown selected packages`() {
-        val targetPackages = ProxyOnlyAppsTargetResolver.resolve(
+        val targetPackages = ProxiedOnlyAppsTargetResolver.resolve(
             installedPackages = setOf("a", "b"),
             selectedPackages = setOf("a", "missing")
         )

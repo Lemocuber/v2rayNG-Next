@@ -16,5 +16,5 @@ This repository uses separate GitHub Actions build paths for the release branch 
 
 ## Android Build Notes
 
-- The app module uses an AIDL Binder contract for Proxied Only Apps at `V2rayNG/app/src/main/aidl/next/v2ray/ang/shizuku/IProxyOnlyAppsService.aidl`.
-- On AGP 9.x, `V2rayNG/app/build.gradle.kts` must keep `buildFeatures.aidl = true` so the generated `IProxyOnlyAppsService` classes exist during `compilePlaystoreReleaseKotlin`.
+- The app module uses an AIDL Binder contract for Proxied Only Apps at `V2rayNG/app/src/main/aidl/next/v2ray/ang/shizuku/IProxiedOnlyAppsService.aidl`.
+- On AGP 9.x, `V2rayNG/app/build.gradle.kts` must keep `buildFeatures.aidl = true` so the generated `IProxiedOnlyAppsService` classes exist during `compilePlaystoreReleaseKotlin`.

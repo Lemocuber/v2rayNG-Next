@@ -145,12 +145,12 @@
     <string name="menu_item_import_proxy_app">Import from Clipboard</string>
     <string name="per_app_proxy_settings">Per-app settings</string>
     <string name="per_app_proxy_settings_enable">Enable per-app</string>
-    <string name="proxy_only_apps_settings">Proxied Only Apps</string>
-    <string name="proxy_only_apps_settings_enable">Enable proxied only apps</string>
+    <string name="proxied_only_apps_settings">Proxied Only Apps</string>
+    <string name="proxied_only_apps_settings_enable">Enable proxied only apps</string>
     <string name="switch_invert_mode">Invert Mode</string>
-    <string name="summary_proxy_only_apps">General: checked apps are enabled when VPN starts and disabled when VPN stops.\nInvert mode: checked apps are disabled when VPN starts and enabled when VPN stops.\nProxied Only Apps is available only in VPN mode.</string>
+    <string name="summary_proxied_only_apps">General: checked apps are enabled when VPN starts and disabled when VPN stops.\nInvert mode: checked apps are disabled when VPN starts and enabled when VPN stops.\nProxied Only Apps is available only in VPN mode.</string>
     <string name="toast_shizuku_required">Shizuku permission and VPN mode are required for Proxied Only Apps</string>
-    <string name="toast_poa_apply_failed">Failed to apply POA</string>
+    <string name="toast_proxied_only_apps_apply_failed">Failed to apply POA</string>
     <string name="toast_shizuku_denied">Shizuku permission denied</string>
 
     <!-- Preferences -->

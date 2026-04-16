@@ -1,28 +1,28 @@
 package next.v2ray.ang.shizuku
 
-data class ProxyOnlyAppsSessionState(
+data class ProxiedOnlyAppsSessionState(
     val active: Boolean,
     val appliedPackages: Set<String>,
-    val appliedState: ProxyOnlyAppsPackageState?
+    val appliedState: ProxiedOnlyAppsPackageState?
 )
 
-object ProxyOnlyAppsSessionReducer {
+object ProxiedOnlyAppsSessionReducer {
     fun onStart(
         requestedPackages: Set<String>,
-        appliedState: ProxyOnlyAppsPackageState,
+        appliedState: ProxiedOnlyAppsPackageState,
         failedPackages: Set<String>
-    ): ProxyOnlyAppsSessionState {
+    ): ProxiedOnlyAppsSessionState {
         val appliedPackages = requestedPackages - failedPackages
-        return ProxyOnlyAppsSessionState(
+        return ProxiedOnlyAppsSessionState(
             active = appliedPackages.isNotEmpty(),
             appliedPackages = appliedPackages,
             appliedState = appliedState.takeIf { appliedPackages.isNotEmpty() }
         )
     }
 
-    fun onStop(previousState: ProxyOnlyAppsSessionState, failedPackages: Set<String>): ProxyOnlyAppsSessionState {
+    fun onStop(previousState: ProxiedOnlyAppsSessionState, failedPackages: Set<String>): ProxiedOnlyAppsSessionState {
         val remainingPackages = previousState.appliedPackages.intersect(failedPackages)
-        return ProxyOnlyAppsSessionState(
+        return ProxiedOnlyAppsSessionState(
             active = remainingPackages.isNotEmpty(),
             appliedPackages = remainingPackages,
             appliedState = previousState.appliedState.takeIf { remainingPackages.isNotEmpty() }

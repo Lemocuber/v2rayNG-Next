@@ -5,7 +5,7 @@ import android.os.IBinder
 import android.util.Log
 import next.v2ray.ang.AppConfig
 
-class ProxyOnlyAppsUserService : IProxyOnlyAppsService.Stub() {
+class ProxiedOnlyAppsUserService : IProxiedOnlyAppsService.Stub() {
     private val packageManager by lazy { resolvePackageManager() }
     private val setApplicationEnabledSettingMethod by lazy { resolveSetApplicationEnabledSettingMethod() }
 
@@ -26,7 +26,7 @@ class ProxyOnlyAppsUserService : IProxyOnlyAppsService.Stub() {
             runCatching {
                 invokeSetApplicationEnabledSetting(packageName, newState)
             }.onFailure {
-                Log.w(AppConfig.TAG, "ProxyOnlyApps: failed to update $packageName", it)
+                Log.w(AppConfig.TAG, "ProxiedOnlyApps: failed to update $packageName", it)
                 failedPackages.add(packageName)
             }
         }

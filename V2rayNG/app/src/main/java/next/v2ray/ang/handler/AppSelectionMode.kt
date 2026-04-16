@@ -24,15 +24,15 @@ enum class AppSelectionMode(
         invertTextRes = R.string.switch_bypass_apps_mode,
         helpTextRes = R.string.summary_pref_per_app_proxy
     ),
-    PROXY_ONLY_APPS(
-        value = "proxy_only_apps",
-        enabledKey = AppConfig.PREF_PROXY_ONLY_APPS,
-        selectedSetKey = AppConfig.PREF_PROXY_ONLY_APPS_SET,
-        invertKey = AppConfig.PREF_PROXY_ONLY_APPS_INVERT,
-        titleRes = R.string.proxy_only_apps_settings,
-        enabledTextRes = R.string.proxy_only_apps_settings_enable,
+    PROXIED_ONLY_APPS(
+        value = "proxied_only_apps",
+        enabledKey = AppConfig.PREF_PROXIED_ONLY_APPS,
+        selectedSetKey = AppConfig.PREF_PROXIED_ONLY_APPS_SET,
+        invertKey = AppConfig.PREF_PROXIED_ONLY_APPS_INVERT,
+        titleRes = R.string.proxied_only_apps_settings,
+        enabledTextRes = R.string.proxied_only_apps_settings_enable,
         invertTextRes = R.string.switch_invert_mode,
-        helpTextRes = R.string.summary_proxy_only_apps
+        helpTextRes = R.string.summary_proxied_only_apps
     );
 
     companion object {

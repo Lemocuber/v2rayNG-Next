@@ -1,6 +1,6 @@
 package next.v2ray.ang.shizuku
 
-object ProxyOnlyAppsTargetResolver {
+object ProxiedOnlyAppsTargetResolver {
     fun resolve(
         installedPackages: Set<String>,
         selectedPackages: Set<String>,

@@ -5,25 +5,25 @@ import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
 import org.junit.Test
 
-class ProxyOnlyAppsSessionReducerTest {
+class ProxiedOnlyAppsSessionReducerTest {
     @Test
     fun `start keeps only successfully applied packages`() {
-        val state = ProxyOnlyAppsSessionReducer.onStart(
+        val state = ProxiedOnlyAppsSessionReducer.onStart(
             requestedPackages = setOf("a", "b"),
-            appliedState = ProxyOnlyAppsPackageState.ENABLED,
+            appliedState = ProxiedOnlyAppsPackageState.ENABLED,
             failedPackages = setOf("b")
         )
 
         assertTrue(state.active)
         assertEquals(setOf("a"), state.appliedPackages)
-        assertEquals(ProxyOnlyAppsPackageState.ENABLED, state.appliedState)
+        assertEquals(ProxiedOnlyAppsPackageState.ENABLED, state.appliedState)
     }
 
     @Test
     fun `start clears inactive session when all packages fail`() {
-        val state = ProxyOnlyAppsSessionReducer.onStart(
+        val state = ProxiedOnlyAppsSessionReducer.onStart(
             requestedPackages = setOf("a"),
-            appliedState = ProxyOnlyAppsPackageState.DISABLED,
+            appliedState = ProxiedOnlyAppsPackageState.DISABLED,
             failedPackages = setOf("a")
         )
 
@@ -34,27 +34,27 @@ class ProxyOnlyAppsSessionReducerTest {
 
     @Test
     fun `stop keeps retry set for failures`() {
-        val state = ProxyOnlyAppsSessionReducer.onStop(
-            previousState = ProxyOnlyAppsSessionState(
+        val state = ProxiedOnlyAppsSessionReducer.onStop(
+            previousState = ProxiedOnlyAppsSessionState(
                 active = true,
                 appliedPackages = setOf("a", "b"),
-                appliedState = ProxyOnlyAppsPackageState.DISABLED
+                appliedState = ProxiedOnlyAppsPackageState.DISABLED
             ),
             failedPackages = setOf("b")
         )
 
         assertTrue(state.active)
         assertEquals(setOf("b"), state.appliedPackages)
-        assertEquals(ProxyOnlyAppsPackageState.DISABLED, state.appliedState)
+        assertEquals(ProxiedOnlyAppsPackageState.DISABLED, state.appliedState)
     }
 
     @Test
     fun `stop clears session when everything is reverted`() {
-        val state = ProxyOnlyAppsSessionReducer.onStop(
-            previousState = ProxyOnlyAppsSessionState(
+        val state = ProxiedOnlyAppsSessionReducer.onStop(
+            previousState = ProxiedOnlyAppsSessionState(
                 active = true,
                 appliedPackages = setOf("a"),
-                appliedState = ProxyOnlyAppsPackageState.ENABLED
+                appliedState = ProxiedOnlyAppsPackageState.ENABLED
             ),
             failedPackages = emptySet()
         )

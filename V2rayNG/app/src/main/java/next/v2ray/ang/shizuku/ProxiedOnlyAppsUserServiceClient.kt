@@ -10,25 +10,25 @@ import rikka.shizuku.Shizuku
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-object ProxyOnlyAppsUserServiceClient : ProxyOnlyAppsServiceGateway {
+object ProxiedOnlyAppsUserServiceClient : ProxiedOnlyAppsServiceGateway {
     private val userServiceArgs = Shizuku.UserServiceArgs(
-        ComponentName(BuildConfig.APPLICATION_ID, ProxyOnlyAppsUserService::class.java.name)
+        ComponentName(BuildConfig.APPLICATION_ID, ProxiedOnlyAppsUserService::class.java.name)
     )
         .daemon(false)
-        .processNameSuffix("proxy_only_apps")
+        .processNameSuffix("proxied_only_apps")
         .debuggable(BuildConfig.DEBUG)
         .version(BuildConfig.VERSION_CODE)
 
-    override fun setPackagesState(packageNames: Collection<String>, state: ProxyOnlyAppsPackageState): Set<String> {
+    override fun setPackagesState(packageNames: Collection<String>, state: ProxiedOnlyAppsPackageState): Set<String> {
         val packages = packageNames.distinct()
         if (packages.isEmpty()) return emptySet()
         if (!ShizukuRuntime.isReady() || Shizuku.getVersion() < 10) return packages.toSet()
 
-        var service: IProxyOnlyAppsService? = null
+        var service: IProxiedOnlyAppsService? = null
         val latch = CountDownLatch(1)
         val connection = object : ServiceConnection {
             override fun onServiceConnected(name: ComponentName?, binder: IBinder?) {
-                service = binder?.let(IProxyOnlyAppsService.Stub::asInterface)
+                service = binder?.let(IProxiedOnlyAppsService.Stub::asInterface)
                 latch.countDown()
             }
 
@@ -43,11 +43,11 @@ object ProxyOnlyAppsUserServiceClient : ProxyOnlyAppsServiceGateway {
                 service?.setPackagesState(ArrayList(packages), state.packageManagerState)?.toSet() ?: packages.toSet()
             }
         } catch (e: Throwable) {
-            Log.w(AppConfig.TAG, "ProxyOnlyApps: failed to bind user service", e)
+            Log.w(AppConfig.TAG, "ProxiedOnlyApps: failed to bind user service", e)
             packages.toSet()
         } finally {
             runCatching { Shizuku.unbindUserService(userServiceArgs, connection, true) }
-                .onFailure { Log.w(AppConfig.TAG, "ProxyOnlyApps: failed to unbind user service", it) }
+                .onFailure { Log.w(AppConfig.TAG, "ProxiedOnlyApps: failed to unbind user service", it) }
         }
     }
 }

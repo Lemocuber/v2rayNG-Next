@@ -2,7 +2,7 @@ package next.v2ray.ang.shizuku
 
 import android.content.pm.PackageManager
 
-enum class ProxyOnlyAppsPackageState(val storageValue: String, val packageManagerState: Int) {
+enum class ProxiedOnlyAppsPackageState(val storageValue: String, val packageManagerState: Int) {
     ENABLED("enabled", PackageManager.COMPONENT_ENABLED_STATE_ENABLED),
     DISABLED("disabled", PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER);
 
@@ -13,6 +13,6 @@ enum class ProxyOnlyAppsPackageState(val storageValue: String, val packageManage
     }
 }
 
-object ProxyOnlyAppsOperationPlanner {
-    fun stateOnStart(invert: Boolean) = if (invert) ProxyOnlyAppsPackageState.DISABLED else ProxyOnlyAppsPackageState.ENABLED
+object ProxiedOnlyAppsOperationPlanner {
+    fun stateOnStart(invert: Boolean) = if (invert) ProxiedOnlyAppsPackageState.DISABLED else ProxiedOnlyAppsPackageState.ENABLED
 }

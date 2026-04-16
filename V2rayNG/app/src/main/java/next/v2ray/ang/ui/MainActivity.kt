@@ -35,7 +35,7 @@ import next.v2ray.ang.handler.MmkvManager
 import next.v2ray.ang.handler.SettingsChangeManager
 import next.v2ray.ang.handler.SettingsManager
 import next.v2ray.ang.handler.V2RayServiceManager
-import next.v2ray.ang.shizuku.ProxyOnlyAppsManager
+import next.v2ray.ang.shizuku.ProxiedOnlyAppsManager
 import next.v2ray.ang.shizuku.ShizukuRuntime
 import next.v2ray.ang.util.Utils
 import next.v2ray.ang.viewmodel.MainViewModel
@@ -58,21 +58,21 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     private lateinit var groupPagerAdapter: GroupPagerAdapter
     private var tabMediator: TabLayoutMediator? = null
     private val shizukuBinderReceivedListener = Shizuku.OnBinderReceivedListener {
-        updateProxyOnlyAppsAvailability()
+        updateProxiedOnlyAppsAvailability()
         requestShizukuPermissionIfNeeded()
     }
     private val shizukuBinderDeadListener = Shizuku.OnBinderDeadListener {
-        updateProxyOnlyAppsAvailability()
+        updateProxiedOnlyAppsAvailability()
     }
     private val shizukuPermissionResultListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
         if (requestCode == REQUEST_CODE_SHIZUKU) {
             if (grantResult == PackageManager.PERMISSION_GRANTED) {
-                updateProxyOnlyAppsAvailability()
+                updateProxiedOnlyAppsAvailability()
                 lifecycleScope.launch(Dispatchers.IO) {
-                    ProxyOnlyAppsManager.reconcileIfNeeded(applicationContext)
+                    ProxiedOnlyAppsManager.reconcileIfNeeded(applicationContext)
                 }
             } else {
-                updateProxyOnlyAppsAvailability()
+                updateProxiedOnlyAppsAvailability()
                 toast(R.string.toast_shizuku_denied)
             }
         }
@@ -232,7 +232,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
 
     override fun onResume() {
         super.onResume()
-        updateProxyOnlyAppsAvailability()
+        updateProxiedOnlyAppsAvailability()
     }
 
     override fun onPause() {
@@ -659,9 +659,9 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         when (item.itemId) {
             R.id.sub_setting -> requestActivityLauncher.launch(Intent(this, SubSettingActivity::class.java))
             R.id.per_app_proxy_settings -> requestActivityLauncher.launch(PerAppProxyActivity.newIntent(this, AppSelectionMode.PER_APP_PROXY))
-            R.id.proxy_only_apps_settings -> {
-                if (isProxyOnlyAppsAvailable()) {
-                    requestActivityLauncher.launch(PerAppProxyActivity.newIntent(this, AppSelectionMode.PROXY_ONLY_APPS))
+            R.id.proxied_only_apps_settings -> {
+                if (isProxiedOnlyAppsAvailable()) {
+                    requestActivityLauncher.launch(PerAppProxyActivity.newIntent(this, AppSelectionMode.PROXIED_ONLY_APPS))
                 } else {
                     toast(R.string.toast_shizuku_required)
                 }
@@ -688,28 +688,28 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     }
 
     private fun initShizukuState() {
-        updateProxyOnlyAppsAvailability()
+        updateProxiedOnlyAppsAvailability()
         Shizuku.addBinderReceivedListenerSticky(shizukuBinderReceivedListener)
         Shizuku.addBinderDeadListener(shizukuBinderDeadListener)
         Shizuku.addRequestPermissionResultListener(shizukuPermissionResultListener)
         requestShizukuPermissionIfNeeded()
         lifecycleScope.launch(Dispatchers.IO) {
-            ProxyOnlyAppsManager.reconcileIfNeeded(applicationContext)
+            ProxiedOnlyAppsManager.reconcileIfNeeded(applicationContext)
         }
     }
 
-    private fun updateProxyOnlyAppsAvailability() {
-        binding.navView.menu.findItem(R.id.proxy_only_apps_settings)?.isEnabled = isProxyOnlyAppsAvailable()
+    private fun updateProxiedOnlyAppsAvailability() {
+        binding.navView.menu.findItem(R.id.proxied_only_apps_settings)?.isEnabled = isProxiedOnlyAppsAvailable()
     }
 
-    private fun isProxyOnlyAppsAvailable(): Boolean {
+    private fun isProxiedOnlyAppsAvailable(): Boolean {
         return SettingsManager.isVpnMode() && ShizukuRuntime.isReady()
     }
 
     private fun requestShizukuPermissionIfNeeded() {
         lifecycleScope.launch {
             if (!ShizukuRuntime.isAvailable() || ShizukuRuntime.hasPermission()) {
-                updateProxyOnlyAppsAvailability()
+                updateProxiedOnlyAppsAvailability()
                 return@launch
             }
 
