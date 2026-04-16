@@ -1,13 +1,13 @@
-# Proxy Only Apps
+# Proxied Only Apps
 
-Proxy Only Apps is a VPN-mode-only feature that uses a Shizuku user service to toggle application enabled state for the selected packages while the VPN session is active.
+Proxied Only Apps is a VPN-mode-only feature that uses a Shizuku user service to toggle application enabled state for the selected packages while the VPN session is active.
 
 ## Behavior
 
 - Normal mode: checked apps are enabled when VPN starts and disabled when VPN stops.
 - Invert mode: checked apps are disabled when VPN starts and enabled when VPN stops.
 - The checked package set is always the target set; invert mode changes the applied state, not the package selection.
-- VPN startup does not wait for Proxy Only Apps. The Shizuku apply step runs asynchronously after the VPN core starts.
+- VPN startup does not wait for Proxied Only Apps. The Shizuku apply step runs asynchronously after the VPN core starts.
 - If any package operation fails, the app shows a single short toast: `Failed to apply POA`.
 
 ## Runtime Structure

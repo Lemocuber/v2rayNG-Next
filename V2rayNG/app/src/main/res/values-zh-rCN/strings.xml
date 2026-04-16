@@ -141,6 +141,13 @@
     <string name="menu_item_import_proxy_app">从剪贴板导入</string>
     <string name="per_app_proxy_settings">分应用设置</string>
     <string name="per_app_proxy_settings_enable">启用分应用</string>
+    <string name="proxy_only_apps_settings">仅代理时应用</string>
+    <string name="proxy_only_apps_settings_enable">启用仅代理时应用</string>
+    <string name="switch_invert_mode">反转模式</string>
+    <string name="summary_proxy_only_apps">常规：VPN 启动时启用已勾选应用，VPN 停止时禁用已勾选应用。\n反转模式：VPN 启动时禁用已勾选应用，VPN 停止时启用已勾选应用。\n仅代理时应用仅在 VPN 模式下可用。自动选中需代理应用的选项位于菜单中</string>
+    <string name="toast_shizuku_required">仅代理时应用需要 Shizuku 权限和 VPN 模式</string>
+    <string name="toast_poa_apply_failed">应用仅代理时应用设置失败</string>
+    <string name="toast_shizuku_denied">Shizuku 权限被拒绝</string>
 
     <!-- Preferences -->
     <string name="title_settings">设置</string>
