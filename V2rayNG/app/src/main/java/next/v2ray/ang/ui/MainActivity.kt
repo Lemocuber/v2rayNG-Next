@@ -711,7 +711,8 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
                 title = getString(R.string.proxied_only_apps_settings)
                 setIcon(R.drawable.ic_proxied_only_apps_24dp)
             } else {
-                val defaultTextColor = binding.navView.itemTextColor?.defaultColor ?: currentTextColor
+                val defaultTextColor = binding.navView.itemTextColor?.defaultColor
+                    ?: ContextCompat.getColor(this@MainActivity, R.color.color_fab_inactive)
                 val mutedTextColor = ColorUtils.setAlphaComponent(defaultTextColor, MUTED_DRAWER_ICON_ALPHA)
                 title = SpannableString(getString(R.string.proxied_only_apps_settings)).apply {
                     setSpan(ForegroundColorSpan(mutedTextColor), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
