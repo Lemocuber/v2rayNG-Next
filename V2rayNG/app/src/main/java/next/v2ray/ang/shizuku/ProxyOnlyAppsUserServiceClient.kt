@@ -10,7 +10,7 @@ import rikka.shizuku.Shizuku
 import java.util.concurrent.CountDownLatch
 import java.util.concurrent.TimeUnit
 
-object ProxyOnlyAppsUserServiceClient {
+object ProxyOnlyAppsUserServiceClient : ProxyOnlyAppsServiceGateway {
     private val userServiceArgs = Shizuku.UserServiceArgs(
         ComponentName(BuildConfig.APPLICATION_ID, ProxyOnlyAppsUserService::class.java.name)
     )
@@ -19,7 +19,7 @@ object ProxyOnlyAppsUserServiceClient {
         .debuggable(BuildConfig.DEBUG)
         .version(BuildConfig.VERSION_CODE)
 
-    fun setPackagesEnabled(packageNames: Collection<String>, enabled: Boolean): Set<String> {
+    override fun setPackagesState(packageNames: Collection<String>, state: ProxyOnlyAppsPackageState): Set<String> {
         val packages = packageNames.distinct()
         if (packages.isEmpty()) return emptySet()
         if (!ShizukuRuntime.isReady() || Shizuku.getVersion() < 10) return packages.toSet()
@@ -40,7 +40,7 @@ object ProxyOnlyAppsUserServiceClient {
             if (!latch.await(5, TimeUnit.SECONDS)) {
                 packages.toSet()
             } else {
-                service?.setPackagesEnabled(ArrayList(packages), enabled)?.toSet() ?: packages.toSet()
+                service?.setPackagesState(ArrayList(packages), state.packageManagerState)?.toSet() ?: packages.toSet()
             }
         } catch (e: Throwable) {
             Log.w(AppConfig.TAG, "ProxyOnlyApps: failed to bind user service", e)

@@ -13,15 +13,13 @@ class ProxyOnlyAppsUserService : IProxyOnlyAppsService.Stub() {
         System.exit(0)
     }
 
-    override fun setPackagesEnabled(packageNames: MutableList<String>?, enabled: Boolean): MutableList<String> {
+    override fun setPackagesState(packageNames: MutableList<String>?, newState: Int): MutableList<String> {
         val packages = packageNames?.distinct().orEmpty()
         if (packages.isEmpty()) return mutableListOf()
-
-        val newState = if (enabled) {
-            PackageManager.COMPONENT_ENABLED_STATE_ENABLED
-        } else {
-            PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER
-        }
+        require(
+            newState == PackageManager.COMPONENT_ENABLED_STATE_ENABLED
+                || newState == PackageManager.COMPONENT_ENABLED_STATE_DISABLED_USER
+        ) { "Unsupported package state: $newState" }
 
         val failedPackages = mutableListOf<String>()
         packages.forEach { packageName ->

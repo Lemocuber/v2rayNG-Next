@@ -660,7 +660,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
             R.id.sub_setting -> requestActivityLauncher.launch(Intent(this, SubSettingActivity::class.java))
             R.id.per_app_proxy_settings -> requestActivityLauncher.launch(PerAppProxyActivity.newIntent(this, AppSelectionMode.PER_APP_PROXY))
             R.id.proxy_only_apps_settings -> {
-                if (ShizukuRuntime.isReady()) {
+                if (isProxyOnlyAppsAvailable()) {
                     requestActivityLauncher.launch(PerAppProxyActivity.newIntent(this, AppSelectionMode.PROXY_ONLY_APPS))
                 } else {
                     toast(R.string.toast_shizuku_required)
@@ -700,7 +700,11 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     }
 
     private fun updateProxyOnlyAppsAvailability() {
-        binding.navView.menu.findItem(R.id.proxy_only_apps_settings)?.isEnabled = ShizukuRuntime.isReady()
+        binding.navView.menu.findItem(R.id.proxy_only_apps_settings)?.isEnabled = isProxyOnlyAppsAvailable()
+    }
+
+    private fun isProxyOnlyAppsAvailable(): Boolean {
+        return SettingsManager.isVpnMode() && ShizukuRuntime.isReady()
     }
 
     private fun requestShizukuPermissionIfNeeded() {

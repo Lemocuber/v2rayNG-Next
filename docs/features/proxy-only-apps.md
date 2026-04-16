@@ -1,12 +1,21 @@
 # Proxy Only Apps
 
-Proxy Only Apps uses a Shizuku user service to toggle application enabled state for selected packages while the feature is active.
+Proxy Only Apps is a VPN-mode-only feature that uses a Shizuku user service to toggle application enabled state for the selected packages while the VPN session is active.
+
+## Behavior
+
+- Normal mode: checked apps are enabled when VPN starts and disabled when VPN stops.
+- Invert mode: checked apps are disabled when VPN starts and enabled when VPN stops.
+- The checked package set is always the target set; invert mode changes the applied state, not the package selection.
+- VPN startup does not wait for Proxy Only Apps. The Shizuku apply step runs asynchronously after the VPN core starts.
+- If any package operation fails, the app shows a single short toast: `Failed to apply POA`.
 
 ## Runtime Structure
 
 - [IProxyOnlyAppsService.aidl](../../V2rayNG/app/src/main/aidl/next/v2ray/ang/shizuku/IProxyOnlyAppsService.aidl) defines the Binder contract shared by the app process and the Shizuku user service process.
 - [ProxyOnlyAppsUserService.kt](../../V2rayNG/app/src/main/java/next/v2ray/ang/shizuku/ProxyOnlyAppsUserService.kt) runs in the Shizuku-managed process and reflects into `IPackageManager.setApplicationEnabledSetting(...)`.
-- [ProxyOnlyAppsUserServiceClient.kt](../../V2rayNG/app/src/main/java/next/v2ray/ang/shizuku/ProxyOnlyAppsUserServiceClient.kt) binds the user service and sends the selected package list across the Binder boundary.
+- [ProxyOnlyAppsUserServiceClient.kt](../../V2rayNG/app/src/main/java/next/v2ray/ang/shizuku/ProxyOnlyAppsUserServiceClient.kt) binds the user service and applies an explicit package enabled state.
+- [ProxyOnlyAppsManager.kt](../../V2rayNG/app/src/main/java/next/v2ray/ang/shizuku/ProxyOnlyAppsManager.kt) serializes start/stop reconciliation work on a background coroutine and persists the last successfully applied state for reversal.
 
 ## Build Requirement
 

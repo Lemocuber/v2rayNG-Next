@@ -115,13 +115,13 @@ class V2RayVpnService : VpnService(), ServiceControl {
             Log.e(AppConfig.TAG, "StartCore-VPN: Interface not initialized")
             return
         }
-        ProxyOnlyAppsManager.handleVpnStart(this)
         if (!V2RayServiceManager.startCoreLoop(mInterface)) {
             Log.e(AppConfig.TAG, "StartCore-VPN: Failed to start core loop")
             ProxyOnlyAppsManager.handleVpnStop()
             stopAllService()
             return
         }
+        ProxyOnlyAppsManager.handleVpnStart(this)
     }
 
     override fun stopService() {

@@ -5,11 +5,10 @@ import org.junit.Test
 
 class ProxyOnlyAppsTargetResolverTest {
     @Test
-    fun `returns selected packages in normal mode`() {
+    fun `returns selected packages after exclusions`() {
         val targetPackages = ProxyOnlyAppsTargetResolver.resolve(
             installedPackages = setOf("a", "b", "c"),
             selectedPackages = setOf("a", "c"),
-            invert = false,
             excludedPackages = setOf("c")
         )
 
@@ -17,23 +16,21 @@ class ProxyOnlyAppsTargetResolverTest {
     }
 
     @Test
-    fun `returns complement packages in invert mode`() {
+    fun `does not invert the target set`() {
         val targetPackages = ProxyOnlyAppsTargetResolver.resolve(
             installedPackages = setOf("a", "b", "c"),
             selectedPackages = setOf("a"),
-            invert = true,
             excludedPackages = setOf("c")
         )
 
-        assertEquals(setOf("b"), targetPackages)
+        assertEquals(setOf("a"), targetPackages)
     }
 
     @Test
     fun `ignores unknown selected packages`() {
         val targetPackages = ProxyOnlyAppsTargetResolver.resolve(
             installedPackages = setOf("a", "b"),
-            selectedPackages = setOf("a", "missing"),
-            invert = false
+            selectedPackages = setOf("a", "missing")
         )
 
         assertEquals(setOf("a"), targetPackages)

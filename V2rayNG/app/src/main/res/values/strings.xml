@@ -147,8 +147,9 @@
     <string name="proxy_only_apps_settings">Proxy Only Apps</string>
     <string name="proxy_only_apps_settings_enable">Enable proxy only apps</string>
     <string name="switch_invert_mode">Invert Mode</string>
-    <string name="summary_proxy_only_apps">General: checked apps are enabled when VPN starts and disabled when VPN stops.\nInvert mode: unchecked apps are enabled when VPN starts and disabled when VPN stops.\nThe option to automatically select proxy applications is in the menu</string>
-    <string name="toast_shizuku_required">Shizuku permission is required for Proxy Only Apps</string>
+    <string name="summary_proxy_only_apps">General: checked apps are enabled when VPN starts and disabled when VPN stops.\nInvert mode: checked apps are disabled when VPN starts and enabled when VPN stops.\nProxy Only Apps is available only in VPN mode. The option to automatically select proxy applications is in the menu</string>
+    <string name="toast_shizuku_required">Shizuku permission and VPN mode are required for Proxy Only Apps</string>
+    <string name="toast_poa_apply_failed">Failed to apply POA</string>
     <string name="toast_shizuku_denied">Shizuku permission denied</string>
 
     <!-- Preferences -->

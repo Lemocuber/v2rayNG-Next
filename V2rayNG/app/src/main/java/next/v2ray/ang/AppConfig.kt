@@ -30,6 +30,7 @@ object AppConfig {
     const val PREF_PROXY_ONLY_APPS_INVERT = "pref_proxy_only_apps_invert"
     const val PREF_PROXY_ONLY_APPS_SESSION_ACTIVE = "pref_proxy_only_apps_session_active"
     const val PREF_PROXY_ONLY_APPS_LAST_APPLIED_SET = "pref_proxy_only_apps_last_applied_set"
+    const val PREF_PROXY_ONLY_APPS_LAST_APPLIED_STATE = "pref_proxy_only_apps_last_applied_state"
     const val PREF_LOCAL_DNS_ENABLED = "pref_local_dns_enabled"
     const val PREF_FAKE_DNS_ENABLED = "pref_fake_dns_enabled"
     const val PREF_APPEND_HTTP_PROXY = "pref_append_http_proxy"
