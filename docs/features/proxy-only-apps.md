@@ -4,9 +4,9 @@ Proxy Only Apps uses a Shizuku user service to toggle application enabled state 
 
 ## Runtime Structure
 
-- [IProxyOnlyAppsService.aidl](../../V2rayNG/app/src/main/aidl/com/v2ray/ang/shizuku/IProxyOnlyAppsService.aidl) defines the Binder contract shared by the app process and the Shizuku user service process.
-- [ProxyOnlyAppsUserService.kt](../../V2rayNG/app/src/main/java/com/v2ray/ang/shizuku/ProxyOnlyAppsUserService.kt) runs in the Shizuku-managed process and reflects into `IPackageManager.setApplicationEnabledSetting(...)`.
-- [ProxyOnlyAppsUserServiceClient.kt](../../V2rayNG/app/src/main/java/com/v2ray/ang/shizuku/ProxyOnlyAppsUserServiceClient.kt) binds the user service and sends the selected package list across the Binder boundary.
+- [IProxyOnlyAppsService.aidl](../../V2rayNG/app/src/main/aidl/next/v2ray/ang/shizuku/IProxyOnlyAppsService.aidl) defines the Binder contract shared by the app process and the Shizuku user service process.
+- [ProxyOnlyAppsUserService.kt](../../V2rayNG/app/src/main/java/next/v2ray/ang/shizuku/ProxyOnlyAppsUserService.kt) runs in the Shizuku-managed process and reflects into `IPackageManager.setApplicationEnabledSetting(...)`.
+- [ProxyOnlyAppsUserServiceClient.kt](../../V2rayNG/app/src/main/java/next/v2ray/ang/shizuku/ProxyOnlyAppsUserServiceClient.kt) binds the user service and sends the selected package list across the Binder boundary.
 
 ## Build Requirement
 

@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.v2ray.ang"
+    namespace = "next.v2ray.ang"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.v2ray.ang"
+        applicationId = "next.v2ray.ang"
         minSdk = 24
         targetSdk = 36
         versionCode = 718
