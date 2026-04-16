@@ -6,12 +6,12 @@ import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import com.v2ray.ang.databinding.ItemRecyclerBypassListBinding
 import com.v2ray.ang.dto.AppInfo
-import com.v2ray.ang.viewmodel.PerAppProxyViewModel
+import com.v2ray.ang.handler.AppSelectionState
 
 class PerAppProxyAdapter(
     val apps: List<AppInfo>,
-    val viewModel: PerAppProxyViewModel
-) :RecyclerView.Adapter<PerAppProxyAdapter.BaseViewHolder>() {
+    val selectionState: AppSelectionState
+) : RecyclerView.Adapter<PerAppProxyAdapter.BaseViewHolder>() {
 
     companion object {
         private const val VIEW_TYPE_HEADER = 0
@@ -63,15 +63,15 @@ class PerAppProxyAdapter(
             }
 
             itemBypassBinding.packageName.text = appInfo.packageName
-            itemBypassBinding.checkBox.isChecked = viewModel.contains(appInfo.packageName)
+            itemBypassBinding.checkBox.isChecked = selectionState.contains(appInfo.packageName)
 
             itemView.setOnClickListener(this)
         }
 
         override fun onClick(v: View?) {
             val packageName = appInfo.packageName
-            viewModel.toggle(packageName)
-            itemBypassBinding.checkBox.isChecked = viewModel.contains(packageName)
+            selectionState.toggle(packageName)
+            itemBypassBinding.checkBox.isChecked = selectionState.contains(packageName)
         }
     }
 }

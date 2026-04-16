@@ -7,6 +7,7 @@ import androidx.work.WorkManager
 import com.tencent.mmkv.MMKV
 import com.v2ray.ang.AppConfig.ANG_PACKAGE
 import com.v2ray.ang.handler.SettingsManager
+import com.v2ray.ang.shizuku.ShizukuRuntime
 
 class AngApplication : MultiDexApplication() {
     companion object {
@@ -18,6 +19,7 @@ class AngApplication : MultiDexApplication() {
      * @param base The base context.
      */
     override fun attachBaseContext(base: Context?) {
+        ShizukuRuntime.init(base)
         super.attachBaseContext(base)
         application = this
     }
@@ -31,6 +33,7 @@ class AngApplication : MultiDexApplication() {
      */
     override fun onCreate() {
         super.onCreate()
+        ShizukuRuntime.onAppCreate(this)
 
         MMKV.initialize(this)
 

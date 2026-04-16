@@ -150,6 +150,8 @@ dependencies {
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.fragment)
+    implementation(libs.shizuku.api)
+    implementation(libs.shizuku.provider)
 
     // UI Libraries
     implementation(libs.material)

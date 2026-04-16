@@ -1,13 +1,14 @@
 package com.v2ray.ang.ui
 
 import android.annotation.SuppressLint
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
 import android.util.Log
 import android.view.Menu
 import android.view.MenuItem
 import android.widget.Toast
-import androidx.activity.viewModels
 import androidx.appcompat.widget.SearchView
 import androidx.lifecycle.lifecycleScope
 import com.v2ray.ang.AppConfig
@@ -18,13 +19,11 @@ import com.v2ray.ang.dto.AppInfo
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.extension.toastSuccess
 import com.v2ray.ang.extension.v2RayApplication
-import com.v2ray.ang.handler.MmkvManager
-import com.v2ray.ang.handler.SettingsChangeManager
-import com.v2ray.ang.handler.SettingsManager
+import com.v2ray.ang.handler.AppSelectionMode
+import com.v2ray.ang.handler.AppSelectionStore
 import com.v2ray.ang.util.AppManagerUtil
 import com.v2ray.ang.util.HttpUtil
 import com.v2ray.ang.util.Utils
-import com.v2ray.ang.viewmodel.PerAppProxyViewModel
 import es.dmoral.toasty.Toasty
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
@@ -32,33 +31,45 @@ import kotlinx.coroutines.withContext
 import java.text.Collator
 
 class PerAppProxyActivity : BaseActivity() {
+    companion object {
+        private const val EXTRA_MODE = "extra_mode"
+
+        fun newIntent(context: Context, mode: AppSelectionMode) =
+            Intent(context, PerAppProxyActivity::class.java).putExtra(EXTRA_MODE, mode.value)
+    }
+
     private val binding by lazy { ActivityBypassListBinding.inflate(layoutInflater) }
+    private val mode by lazy { AppSelectionMode.fromValue(intent.getStringExtra(EXTRA_MODE)) }
+    private val selectionStore by lazy { AppSelectionStore(mode) }
 
     private var adapter: PerAppProxyAdapter? = null
     private var appsAll: List<AppInfo>? = null
-    private val viewModel: PerAppProxyViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //setContentView(binding.root)
-        setContentViewWithToolbar(binding.root, showHomeAsUp = true, title = getString(R.string.per_app_proxy_settings))
+        setContentViewWithToolbar(binding.root, showHomeAsUp = true, title = getString(mode.titleRes))
 
         addCustomDividerToRecyclerView(binding.recyclerView, this, R.drawable.custom_divider)
-
+        configureHeader()
         initList()
+    }
+
+    private fun configureHeader() {
+        binding.switchPerAppProxy.text = getString(mode.enabledTextRes)
+        binding.switchBypassApps.text = getString(mode.invertTextRes)
+        binding.layoutSwitchBypassAppsTips.contentDescription = getString(mode.invertTextRes)
+
+        binding.switchPerAppProxy.isChecked = selectionStore.isEnabled()
+        binding.switchBypassApps.isChecked = selectionStore.isInverted()
 
         binding.switchPerAppProxy.setOnCheckedChangeListener { _, isChecked ->
-            MmkvManager.encodeSettings(AppConfig.PREF_PER_APP_PROXY, isChecked)
+            selectionStore.setEnabled(isChecked)
         }
-        binding.switchPerAppProxy.isChecked = MmkvManager.decodeSettingsBool(AppConfig.PREF_PER_APP_PROXY, false)
-
         binding.switchBypassApps.setOnCheckedChangeListener { _, isChecked ->
-            MmkvManager.encodeSettings(AppConfig.PREF_BYPASS_APPS, isChecked)
+            selectionStore.setInverted(isChecked)
         }
-        binding.switchBypassApps.isChecked = MmkvManager.decodeSettingsBool(AppConfig.PREF_BYPASS_APPS, false)
-
         binding.layoutSwitchBypassAppsTips.setOnClickListener {
-            Toasty.info(this, R.string.summary_pref_per_app_proxy, Toast.LENGTH_LONG, true).show()
+            Toasty.info(this, mode.helpTextRes, Toast.LENGTH_LONG, true).show()
         }
     }
 
@@ -69,11 +80,10 @@ class PerAppProxyActivity : BaseActivity() {
             try {
                 val apps = withContext(Dispatchers.IO) {
                     val appsList = AppManagerUtil.loadNetworkAppList(this@PerAppProxyActivity)
-
-                    val blacklistSet = viewModel.getAll()
-                    if (blacklistSet.isNotEmpty()) {
+                    val selectedPackages = selectionStore.getAll()
+                    if (selectedPackages.isNotEmpty()) {
                         appsList.forEach { app ->
-                            app.isSelected = if (blacklistSet.contains(app.packageName)) 1 else 0
+                            app.isSelected = if (selectedPackages.contains(app.packageName)) 1 else 0
                         }
                         appsList.sortedWith { p1, p2 ->
                             when {
@@ -95,9 +105,8 @@ class PerAppProxyActivity : BaseActivity() {
                 }
 
                 appsAll = apps
-                adapter = PerAppProxyAdapter(apps, viewModel)
+                adapter = PerAppProxyAdapter(apps, selectionStore)
                 binding.recyclerView.adapter = adapter
-
             } catch (e: Exception) {
                 Log.e(ANG_PACKAGE, "Error loading apps", e)
             } finally {
@@ -125,29 +134,29 @@ class PerAppProxyActivity : BaseActivity() {
         return super.onCreateOptionsMenu(menu)
     }
 
-
     @SuppressLint("NotifyDataSetChanged")
     override fun onOptionsItemSelected(item: MenuItem) = when (item.itemId) {
         R.id.select_all -> {
             selectAllApp()
-            allowPerAppProxy()
+            enableCurrentMode()
             true
         }
+
         R.id.invert_selection -> {
             invertSelection()
-            allowPerAppProxy()
+            enableCurrentMode()
             true
         }
 
         R.id.select_proxy_app -> {
             selectProxyAppAuto()
-            allowPerAppProxy()
+            enableCurrentMode()
             true
         }
 
         R.id.import_proxy_app -> {
             importProxyApp()
-            allowPerAppProxy()
+            enableCurrentMode()
             true
         }
 
@@ -160,23 +169,23 @@ class PerAppProxyActivity : BaseActivity() {
     }
 
     private fun selectAllApp() {
-        adapter?.let { adapter ->
-            val pkgNames = adapter.apps.map { it.packageName }
-            val allSelected = pkgNames.all { viewModel.contains(it) }
+        adapter?.let { currentAdapter ->
+            val packageNames = currentAdapter.apps.map { it.packageName }
+            val allSelected = packageNames.all { selectionStore.contains(it) }
 
             if (allSelected) {
-                viewModel.removeAll(pkgNames)
+                selectionStore.removeAll(packageNames)
             } else {
-                viewModel.addAll(pkgNames)
+                selectionStore.addAll(packageNames)
             }
             refreshData()
         }
     }
 
     private fun invertSelection() {
-        adapter?.let { adapter ->
-            adapter.apps.forEach { app ->
-                viewModel.toggle(app.packageName)
+        adapter?.let { currentAdapter ->
+            currentAdapter.apps.forEach { app ->
+                selectionStore.toggle(app.packageName)
             }
             refreshData()
         }
@@ -190,11 +199,10 @@ class PerAppProxyActivity : BaseActivity() {
         lifecycleScope.launch(Dispatchers.IO) {
             var content = HttpUtil.getUrlContent(url, 5000)
             if (content.isNullOrEmpty()) {
-                val httpPort = SettingsManager.getHttpPort()
+                val httpPort = com.v2ray.ang.handler.SettingsManager.getHttpPort()
                 content = HttpUtil.getUrlContent(url, 5000, httpPort) ?: ""
             }
             launch(Dispatchers.Main) {
-                //Log.i(AppConfig.TAG, content)
                 selectProxyApp(content, true)
                 toastSuccess(R.string.toast_success)
                 hideLoading()
@@ -210,23 +218,21 @@ class PerAppProxyActivity : BaseActivity() {
     }
 
     private fun exportProxyApp() {
-        var lst = binding.switchBypassApps.isChecked.toString()
-
-        viewModel.getAll().forEach { pkg ->
-            lst = lst + System.lineSeparator() + pkg
+        var lines = selectionStore.isInverted().toString()
+        selectionStore.getAll().forEach { pkg ->
+            lines += System.lineSeparator() + pkg
         }
-        Utils.setClipboard(applicationContext, lst)
+        Utils.setClipboard(applicationContext, lines)
         toastSuccess(R.string.toast_success)
     }
 
-    private fun allowPerAppProxy() {
+    private fun enableCurrentMode() {
         binding.switchPerAppProxy.isChecked = true
-        SettingsChangeManager.makeRestartService()
     }
 
     @SuppressLint("NotifyDataSetChanged")
     private fun selectProxyApp(content: String, force: Boolean): Boolean {
-        try {
+        return try {
             val proxyApps = if (TextUtils.isEmpty(content)) {
                 Utils.readTextFromAssets(v2RayApplication, "proxy_package_name")
             } else {
@@ -234,65 +240,48 @@ class PerAppProxyActivity : BaseActivity() {
             }
             if (TextUtils.isEmpty(proxyApps)) return false
 
-            viewModel.clear()
+            selectionStore.clear()
 
-            if (binding.switchBypassApps.isChecked) {
-                adapter?.let { adapter ->
-                    adapter.apps.forEach { app ->
-                        val packageName = app.packageName
-                        if (!inProxyApps(proxyApps, packageName, force)) {
-                            viewModel.add(packageName)
-                        }
+            adapter?.let { currentAdapter ->
+                currentAdapter.apps.forEach { app ->
+                    val inProxyApps = inProxyApps(proxyApps, app.packageName, force)
+                    if (selectionStore.isInverted()) {
+                        if (!inProxyApps) selectionStore.add(app.packageName)
+                    } else {
+                        if (inProxyApps) selectionStore.add(app.packageName)
                     }
-                    refreshData()
-                }
-            } else {
-                adapter?.let { adapter ->
-                    adapter.apps.forEach { app ->
-                        val packageName = app.packageName
-                        if (inProxyApps(proxyApps, packageName, force)) {
-                            viewModel.add(packageName)
-                        }
-                    }
-                    refreshData()
                 }
             }
+            refreshData()
+            true
         } catch (e: Exception) {
             Log.e(AppConfig.TAG, "Error selecting proxy app", e)
-            return false
+            false
         }
-        return true
     }
 
     private fun inProxyApps(proxyApps: String, packageName: String, force: Boolean): Boolean {
-        println(packageName)
         if (force) {
             if (packageName == "com.google.android.webview") return false
             if (packageName.startsWith("com.google")) return true
         }
-
         return proxyApps.indexOf(packageName) >= 0
     }
 
     private fun filterProxyApp(content: String): Boolean {
         val apps = ArrayList<AppInfo>()
-
-        val key = content.uppercase()
-        if (key.isNotEmpty()) {
+        val keyword = content.uppercase()
+        if (keyword.isNotEmpty()) {
             appsAll?.forEach {
-                if (it.appName.uppercase().indexOf(key) >= 0
-                    || it.packageName.uppercase().indexOf(key) >= 0
-                ) {
+                if (it.appName.uppercase().indexOf(keyword) >= 0 || it.packageName.uppercase().indexOf(keyword) >= 0) {
                     apps.add(it)
                 }
             }
         } else {
-            appsAll?.forEach {
-                apps.add(it)
-            }
+            appsAll?.forEach(apps::add)
         }
 
-        adapter = PerAppProxyAdapter(apps, adapter?.viewModel ?: viewModel)
+        adapter = PerAppProxyAdapter(apps, selectionStore)
         binding.recyclerView.adapter = adapter
         refreshData()
         return true

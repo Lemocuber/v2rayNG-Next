@@ -13,6 +13,11 @@
             android:icon="@drawable/ic_per_apps_24dp"
             android:title="@string/per_app_proxy_settings" />
         <item
+            android:id="@+id/proxy_only_apps_settings"
+            android:enabled="false"
+            android:icon="@drawable/ic_per_apps_24dp"
+            android:title="@string/proxy_only_apps_settings" />
+        <item
             android:id="@+id/routing_setting"
             android:icon="@drawable/ic_routing_24dp"
             android:title="@string/routing_settings_title" />

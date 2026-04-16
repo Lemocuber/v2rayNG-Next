@@ -1,6 +1,7 @@
 package com.v2ray.ang.ui
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.content.res.ColorStateList
 import android.net.Uri
 import android.net.VpnService
@@ -28,19 +29,27 @@ import com.v2ray.ang.enums.EConfigType
 import com.v2ray.ang.enums.PermissionType
 import com.v2ray.ang.extension.toast
 import com.v2ray.ang.extension.toastError
+import com.v2ray.ang.handler.AppSelectionMode
 import com.v2ray.ang.handler.AngConfigManager
 import com.v2ray.ang.handler.MmkvManager
 import com.v2ray.ang.handler.SettingsChangeManager
 import com.v2ray.ang.handler.SettingsManager
 import com.v2ray.ang.handler.V2RayServiceManager
+import com.v2ray.ang.shizuku.ProxyOnlyAppsManager
+import com.v2ray.ang.shizuku.ShizukuRuntime
 import com.v2ray.ang.util.Utils
 import com.v2ray.ang.viewmodel.MainViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import rikka.shizuku.Shizuku
 
 class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelectedListener {
+    companion object {
+        private const val REQUEST_CODE_SHIZUKU = 1001
+    }
+
     private val binding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
@@ -48,6 +57,26 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     val mainViewModel: MainViewModel by viewModels()
     private lateinit var groupPagerAdapter: GroupPagerAdapter
     private var tabMediator: TabLayoutMediator? = null
+    private val shizukuBinderReceivedListener = Shizuku.OnBinderReceivedListener {
+        updateProxyOnlyAppsAvailability()
+        requestShizukuPermissionIfNeeded()
+    }
+    private val shizukuBinderDeadListener = Shizuku.OnBinderDeadListener {
+        updateProxyOnlyAppsAvailability()
+    }
+    private val shizukuPermissionResultListener = Shizuku.OnRequestPermissionResultListener { requestCode, grantResult ->
+        if (requestCode == REQUEST_CODE_SHIZUKU) {
+            if (grantResult == PackageManager.PERMISSION_GRANTED) {
+                updateProxyOnlyAppsAvailability()
+                lifecycleScope.launch(Dispatchers.IO) {
+                    ProxyOnlyAppsManager.reconcileIfNeeded(applicationContext)
+                }
+            } else {
+                updateProxyOnlyAppsAvailability()
+                toast(R.string.toast_shizuku_denied)
+            }
+        }
+    }
 
     private val requestVpnPermission = registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
         if (it.resultCode == RESULT_OK) {
@@ -81,6 +110,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         binding.drawerLayout.addDrawerListener(toggle)
         toggle.syncState()
         binding.navView.setNavigationItemSelectedListener(this)
+        initShizukuState()
         onBackPressedDispatcher.addCallback(this, object : OnBackPressedCallback(true) {
             override fun handleOnBackPressed() {
                 if (binding.drawerLayout.isDrawerOpen(GravityCompat.START)) {
@@ -202,6 +232,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
 
     override fun onResume() {
         super.onResume()
+        updateProxyOnlyAppsAvailability()
     }
 
     override fun onPause() {
@@ -627,7 +658,14 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
         // Handle navigation view item clicks here.
         when (item.itemId) {
             R.id.sub_setting -> requestActivityLauncher.launch(Intent(this, SubSettingActivity::class.java))
-            R.id.per_app_proxy_settings -> requestActivityLauncher.launch(Intent(this, PerAppProxyActivity::class.java))
+            R.id.per_app_proxy_settings -> requestActivityLauncher.launch(PerAppProxyActivity.newIntent(this, AppSelectionMode.PER_APP_PROXY))
+            R.id.proxy_only_apps_settings -> {
+                if (ShizukuRuntime.isReady()) {
+                    requestActivityLauncher.launch(PerAppProxyActivity.newIntent(this, AppSelectionMode.PROXY_ONLY_APPS))
+                } else {
+                    toast(R.string.toast_shizuku_required)
+                }
+            }
             R.id.routing_setting -> requestActivityLauncher.launch(Intent(this, RoutingSettingActivity::class.java))
             R.id.user_asset_setting -> requestActivityLauncher.launch(Intent(this, UserAssetActivity::class.java))
             R.id.settings -> requestActivityLauncher.launch(Intent(this, SettingsActivity::class.java))
@@ -643,7 +681,39 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     }
 
     override fun onDestroy() {
+        Shizuku.removeBinderReceivedListener(shizukuBinderReceivedListener)
+        Shizuku.removeBinderDeadListener(shizukuBinderDeadListener)
+        Shizuku.removeRequestPermissionResultListener(shizukuPermissionResultListener)
         tabMediator?.detach()
         super.onDestroy()
+    }
+
+    private fun initShizukuState() {
+        updateProxyOnlyAppsAvailability()
+        Shizuku.addBinderReceivedListenerSticky(shizukuBinderReceivedListener)
+        Shizuku.addBinderDeadListener(shizukuBinderDeadListener)
+        Shizuku.addRequestPermissionResultListener(shizukuPermissionResultListener)
+        requestShizukuPermissionIfNeeded()
+        lifecycleScope.launch(Dispatchers.IO) {
+            ProxyOnlyAppsManager.reconcileIfNeeded(applicationContext)
+        }
+    }
+
+    private fun updateProxyOnlyAppsAvailability() {
+        binding.navView.menu.findItem(R.id.proxy_only_apps_settings)?.isEnabled = ShizukuRuntime.isReady()
+    }
+
+    private fun requestShizukuPermissionIfNeeded() {
+        lifecycleScope.launch {
+            if (!ShizukuRuntime.isAvailable() || ShizukuRuntime.hasPermission()) {
+                updateProxyOnlyAppsAvailability()
+                return@launch
+            }
+
+            if (!Shizuku.shouldShowRequestPermissionRationale()) {
+                runCatching { Shizuku.requestPermission(REQUEST_CODE_SHIZUKU) }
+                    .onFailure { Log.w(AppConfig.TAG, "Failed to request Shizuku permission", it) }
+            }
+        }
     }
 }

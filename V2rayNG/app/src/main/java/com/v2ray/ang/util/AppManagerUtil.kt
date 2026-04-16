@@ -37,4 +37,7 @@ object AppManagerUtil {
     fun getLastUpdateTime(context: Context): Long =
         context.packageManager.getPackageInfo(context.packageName, 0).lastUpdateTime
 
+    fun loadInstalledPackageNames(context: Context): Set<String> =
+        context.packageManager.getInstalledPackages(0).map { it.packageName }.toSet()
+
 }
