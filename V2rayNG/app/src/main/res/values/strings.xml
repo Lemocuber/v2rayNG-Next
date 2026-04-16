@@ -260,6 +260,7 @@
     <string name="title_source_code">Source code</string>
     <string name="title_oss_license">Open Source licenses</string>
     <string name="title_tg_channel">Telegram channel</string>
+    <string name="about_attribution">v2rayNG is the original project by 2dust. v2rayNG Next is a fork by Lemocuber with extended features.</string>
 
     <string name="title_pref_promotion">Promotion</string>
 

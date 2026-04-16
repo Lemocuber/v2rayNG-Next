@@ -2,7 +2,7 @@
 
 本政策自2023年11月17日起施行
 
-2dust 将 v2rayNG Next 应用程序构建为开源应用程序。 本服务由 2dust 免费提供，并且旨在按原样使用。
+v2rayNG 是 2dust 的原始项目。v2rayNG Next 是 Lemocuber 基于 v2rayNG 的扩展功能分支版本，并由 Lemocuber 以开源形式提供。本服务免费提供，并按原样使用。
 
 v2rayNG Next 尊重并保护所有用户的个人隐私权，为此我们向大众公开这份隐私权政策。**您使用 v2rayNG Next 即代表您以阅读并同意了这份条款，如果您不同意这份条款请立即停止使用并卸载 v2rayNG Next。**
 

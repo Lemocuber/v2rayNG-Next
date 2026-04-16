@@ -161,6 +161,15 @@
                     android:layout_height="wrap_content"
                     android:text="@string/title_about"
                     android:textAppearance="@style/TextAppearance.AppCompat.Small" />
+
+                <TextView
+                    android:id="@+id/tv_attribution"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/padding_spacing_dp8"
+                    android:gravity="center"
+                    android:text="@string/about_attribution"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Small" />
             </LinearLayout>
 
         </LinearLayout>
@@ -168,4 +177,3 @@
     </LinearLayout>
 
 </ScrollView>
-

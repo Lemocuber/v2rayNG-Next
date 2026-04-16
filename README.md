@@ -2,6 +2,8 @@
 
 A V2Ray client for Android, support [Xray core](https://github.com/XTLS/Xray-core) and [v2fly core](https://github.com/v2fly/v2ray-core)
 
+v2rayNG is the original project by 2dust. v2rayNG Next is a fork by Lemocuber with extended features.
+
 [![API](https://img.shields.io/badge/API-24%2B-yellow.svg?style=flat)](https://developer.android.com/about/versions/lollipop)
 [![Kotlin Version](https://img.shields.io/badge/Kotlin-2.3.0-blue.svg)](https://kotlinlang.org)
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Lemocuber/v2rayNG-Next)](https://github.com/Lemocuber/v2rayNG-Next/commits/master)

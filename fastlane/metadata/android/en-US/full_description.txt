@@ -1,5 +1,7 @@
 <p>A V2Ray client for Android, support <a href="https://github.com/XTLS/Xray-core">Xray core</a> and <a href="https://github.com/v2fly/v2ray-core">v2fly core</a></p>
 
+<p>v2rayNG is the original project by 2dust. v2rayNG Next is a fork by Lemocuber with extended features.</p>
+
 <h3>Telegram Channel</h3>
 
 <p><a href="https://t.me/github_2dust">github_2dust</a></p>
