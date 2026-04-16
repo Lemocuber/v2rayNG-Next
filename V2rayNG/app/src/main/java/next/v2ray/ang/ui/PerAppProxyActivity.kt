@@ -117,6 +117,11 @@ class PerAppProxyActivity : BaseActivity() {
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
         menuInflater.inflate(R.menu.menu_bypass_list, menu)
+        if (mode == AppSelectionMode.PROXY_ONLY_APPS) {
+            menu.removeItem(R.id.select_all)
+            menu.removeItem(R.id.invert_selection)
+            menu.removeItem(R.id.select_proxy_app)
+        }
 
         val searchItem = menu.findItem(R.id.search_view)
         if (searchItem != null) {
