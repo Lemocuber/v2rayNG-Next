@@ -8,6 +8,7 @@ Proxied Only Apps is a VPN-mode-only feature that uses a Shizuku user service to
 - Invert mode: checked apps are disabled when VPN starts and enabled when VPN stops.
 - The checked package set is always the target set; invert mode changes the applied state, not the package selection.
 - The selection UI exposes search plus clipboard import/export only; bulk actions available in per-app proxy (`Select all`, `Invert selection`, `Auto select proxy app`) are intentionally hidden here.
+- The navigation drawer uses a dedicated icon for Proxied Only Apps so it remains visually distinct from the broader Per-App Proxy settings entry.
 - VPN startup does not wait for Proxied Only Apps. The Shizuku apply step runs asynchronously after the VPN core starts.
 - If any package operation fails, the app shows a single short toast: `Failed to apply POA`.
 
