@@ -699,7 +699,7 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     }
 
     private fun updateProxiedOnlyAppsAvailability() {
-        binding.navView.menu.findItem(R.id.proxied_only_apps_settings)?.isEnabled = isProxiedOnlyAppsAvailable()
+        binding.navView.menu.findItem(R.id.proxied_only_apps_settings)?.isEnabled = true
     }
 
     private fun isProxiedOnlyAppsAvailable(): Boolean {
