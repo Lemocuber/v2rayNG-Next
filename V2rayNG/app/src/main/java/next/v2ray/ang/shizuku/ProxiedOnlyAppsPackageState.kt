@@ -15,4 +15,6 @@ enum class ProxiedOnlyAppsPackageState(val storageValue: String, val packageMana
 
 object ProxiedOnlyAppsOperationPlanner {
     fun stateOnStart(invert: Boolean) = if (invert) ProxiedOnlyAppsPackageState.DISABLED else ProxiedOnlyAppsPackageState.ENABLED
+
+    fun stateOnDisable() = ProxiedOnlyAppsPackageState.ENABLED
 }

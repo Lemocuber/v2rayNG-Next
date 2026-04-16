@@ -21,6 +21,7 @@ import next.v2ray.ang.extension.toastSuccess
 import next.v2ray.ang.extension.v2RayApplication
 import next.v2ray.ang.handler.AppSelectionMode
 import next.v2ray.ang.handler.AppSelectionStore
+import next.v2ray.ang.shizuku.ProxiedOnlyAppsManager
 import next.v2ray.ang.util.AppManagerUtil
 import next.v2ray.ang.util.HttpUtil
 import next.v2ray.ang.util.Utils
@@ -63,6 +64,9 @@ class PerAppProxyActivity : BaseActivity() {
         binding.switchBypassApps.isChecked = selectionStore.isInverted()
 
         binding.switchPerAppProxy.setOnCheckedChangeListener { _, isChecked ->
+            if (mode == AppSelectionMode.PROXIED_ONLY_APPS && selectionStore.isEnabled() && !isChecked) {
+                ProxiedOnlyAppsManager.handleFeatureDisabled(applicationContext)
+            }
             selectionStore.setEnabled(isChecked)
         }
         binding.switchBypassApps.setOnCheckedChangeListener { _, isChecked ->

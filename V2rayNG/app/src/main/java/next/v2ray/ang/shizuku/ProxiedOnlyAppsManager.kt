@@ -47,6 +47,15 @@ object ProxiedOnlyAppsManager {
         }
     }
 
+    fun handleFeatureDisabled(context: Context) {
+        val appContext = context.applicationContext
+        scope.launch {
+            operationMutex.withLock {
+                handleFeatureDisabledLocked(appContext)
+            }
+        }
+    }
+
     fun reconcileIfNeeded(context: Context) {
         if (!ShizukuRuntime.isReady()) return
         val appContext = context.applicationContext
@@ -114,6 +123,15 @@ object ProxiedOnlyAppsManager {
                 failedPackages = failedPackages
             )
         )
+        if (failedPackages.isNotEmpty()) showApplyFailureToast()
+    }
+
+    private fun handleFeatureDisabledLocked(context: Context) {
+        val failedPackages = serviceGateway.setPackagesState(
+            resolveTargetPackages(context),
+            ProxiedOnlyAppsOperationPlanner.stateOnDisable()
+        )
+        clearSession()
         if (failedPackages.isNotEmpty()) showApplyFailureToast()
     }
 

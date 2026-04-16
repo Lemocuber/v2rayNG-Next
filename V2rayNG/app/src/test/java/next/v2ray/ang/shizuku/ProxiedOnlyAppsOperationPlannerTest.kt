@@ -19,4 +19,9 @@ class ProxiedOnlyAppsOperationPlannerTest {
         assertEquals(ProxiedOnlyAppsPackageState.DISABLED, ProxiedOnlyAppsPackageState.ENABLED.reverse())
         assertEquals(ProxiedOnlyAppsPackageState.ENABLED, ProxiedOnlyAppsPackageState.DISABLED.reverse())
     }
+
+    @Test
+    fun `disabling feature restores selected apps to enabled regardless of invert mode`() {
+        assertEquals(ProxiedOnlyAppsPackageState.ENABLED, ProxiedOnlyAppsOperationPlanner.stateOnDisable())
+    }
 }
