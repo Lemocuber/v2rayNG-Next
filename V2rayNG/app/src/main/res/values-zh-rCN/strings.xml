@@ -252,7 +252,7 @@
     <string name="title_source_code">源代码</string>
     <string name="title_oss_license">Open Source licenses</string>
     <string name="title_tg_channel">Telegram 频道</string>
-    <string name="about_attribution">v2rayNG 是 2dust 的原始项目。v2rayNG Next 是 Lemocuber 基于该项目扩展功能的分支版本。</string>
+    <string name="about_attribution">Extended fork from 2dust/v2rayNG</string>
 
 
     <string name="title_pref_auto_update_subscription">自动更新订阅</string>
