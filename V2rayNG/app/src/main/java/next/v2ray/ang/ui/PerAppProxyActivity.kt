@@ -84,6 +84,7 @@ class PerAppProxyActivity : BaseActivity() {
             try {
                 val apps = withContext(Dispatchers.IO) {
                     val appsList = AppManagerUtil.loadNetworkAppList(this@PerAppProxyActivity)
+                        .filter { mode.shouldIncludeInSelectionList(it.isSystemApp) }
                     val selectedPackages = selectionStore.getAll()
                     if (selectedPackages.isNotEmpty()) {
                         appsList.forEach { app ->
