@@ -99,7 +99,7 @@ class BackupActivity : HelperBaseActivity() {
             "yyyy-MM-dd-HH-mm-ss",
             Locale.getDefault()
         ).format(System.currentTimeMillis())
-        val folderName = "${getString(R.string.app_name)}_${dateFormatted}"
+        val folderName = "${getString(R.string.app_display_name)}_${dateFormatted}"
         val backupDir = this.cacheDir.absolutePath + "/$folderName"
         val outputZipFilePath = "${this.cacheDir.absolutePath}/$folderName.zip"
 
@@ -160,7 +160,7 @@ class BackupActivity : HelperBaseActivity() {
             "yyyy-MM-dd-HH-mm-ss",
             Locale.getDefault()
         ).format(System.currentTimeMillis())
-        val defaultFileName = "${getString(R.string.app_name)}_${dateFormatted}.zip"
+        val defaultFileName = "${getString(R.string.app_display_name)}_${dateFormatted}.zip"
 
         launchCreateDocument(defaultFileName) { uri ->
             if (uri != null) {
