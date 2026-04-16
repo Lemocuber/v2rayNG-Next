@@ -6,6 +6,9 @@ import android.content.res.ColorStateList
 import android.net.Uri
 import android.net.VpnService
 import android.os.Bundle
+import android.text.Spanned
+import android.text.SpannableString
+import android.text.style.ForegroundColorSpan
 import android.util.Log
 import android.view.KeyEvent
 import android.view.Menu
@@ -13,6 +16,7 @@ import android.view.MenuItem
 import androidx.activity.OnBackPressedCallback
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
+import androidx.appcompat.content.res.AppCompatResources
 import androidx.appcompat.app.ActionBarDrawerToggle
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.widget.SearchView
@@ -699,7 +703,21 @@ class MainActivity : HelperBaseActivity(), NavigationView.OnNavigationItemSelect
     }
 
     private fun updateProxiedOnlyAppsAvailability() {
-        binding.navView.menu.findItem(R.id.proxied_only_apps_settings)?.isEnabled = true
+        binding.navView.menu.findItem(R.id.proxied_only_apps_settings)?.apply {
+            isEnabled = true
+            if (isProxiedOnlyAppsAvailable()) {
+                title = getString(R.string.proxied_only_apps_settings)
+                setIcon(R.drawable.ic_proxied_only_apps_24dp)
+            } else {
+                val mutedColor = ContextCompat.getColor(this@MainActivity, R.color.color_fab_inactive)
+                title = SpannableString(getString(R.string.proxied_only_apps_settings)).apply {
+                    setSpan(ForegroundColorSpan(mutedColor), 0, length, Spanned.SPAN_EXCLUSIVE_EXCLUSIVE)
+                }
+                icon = AppCompatResources.getDrawable(this@MainActivity, R.drawable.ic_proxied_only_apps_24dp)?.mutate()?.apply {
+                    setTint(mutedColor)
+                }
+            }
+        }
     }
 
     private fun isProxiedOnlyAppsAvailable(): Boolean {
