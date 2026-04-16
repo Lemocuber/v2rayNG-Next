@@ -18,3 +18,9 @@ This fork keeps the Android package name unchanged as `next.v2ray.ang`, but uses
 
 - The canonical GitHub repository URL is `https://github.com/Lemocuber/v2rayNG-Next`.
 - Android release checks, wiki links, issues links, and privacy-policy links should point to the `Lemocuber/v2rayNG-Next` repository.
+- The canonical Telegram link is `https://t.me/lemocuber`.
+
+## Links
+
+- User-facing Telegram references in the app, README, and store metadata should use `https://t.me/lemocuber`.
+- Do not expose promotion or ad-link entries in the navigation or other user-facing surfaces.

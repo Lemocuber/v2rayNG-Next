@@ -9,10 +9,10 @@ v2rayNG is the original project by 2dust. v2rayNG Next is a fork by Lemocuber wi
 [![GitHub commit activity](https://img.shields.io/github/commit-activity/m/Lemocuber/v2rayNG-Next)](https://github.com/Lemocuber/v2rayNG-Next/commits/master)
 [![CodeFactor](https://www.codefactor.io/repository/github/2dust/v2rayng/badge)](https://www.codefactor.io/repository/github/2dust/v2rayng)
 [![GitHub Releases](https://img.shields.io/github/downloads/Lemocuber/v2rayNG-Next/latest/total?logo=github)](https://github.com/Lemocuber/v2rayNG-Next/releases)
-[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/v2rayn)
+[![Chat on Telegram](https://img.shields.io/badge/Chat%20on-Telegram-brightgreen.svg)](https://t.me/lemocuber)
 
 ### Telegram Channel
-[github_2dust](https://t.me/github_2dust)
+[lemocuber](https://t.me/lemocuber)
 
 ### Usage
 
