@@ -7,6 +7,11 @@ This repository uses separate GitHub Actions build paths for the release branch 
 - `master` uses [`.github/workflows/build.yml`](../../.github/workflows/build.yml) to produce signed release APKs for the default distribution flow.
 - `dev` uses [`.github/workflows/build-dev.yml`](../../.github/workflows/build-dev.yml) to produce a single unsigned `playstoreRelease` APK for `arm64-v8a` on every push.
 
+## Distribution Policy
+
+- GitHub Actions artifacts and GitHub Releases are the only maintained distribution outputs in this fork.
+- The repository does not keep Fastlane-based store metadata or store-publishing workflows.
+
 ## Dev Build Constraints
 
 - The `dev` workflow does not decode or require app-signing secrets.
