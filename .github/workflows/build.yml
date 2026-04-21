@@ -2,10 +2,6 @@ name: Build APK
 
 on:
   workflow_dispatch:
-    inputs:
-      release_tag:
-        required: false
-        type: string
   push:
     branches:
       - master
@@ -18,15 +14,15 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v6
       with:
-        submodules: 'recursive'
-        fetch-depth: '0'
+        submodules: recursive
+        fetch-depth: 0
 
     - name: Setup Android SDK
       uses: android-actions/setup-android@v4.0.0
       with:
         log-accepted-android-sdk-licenses: false
-        cmdline-tools-version: '13114758'
-        packages: 'platforms;android-36.1 build-tools;36.1.0 platform-tools'
+        cmdline-tools-version: "13114758"
+        packages: "platforms;android-36.1 build-tools;36.1.0 platform-tools"
 
     - name: Install NDK
       run: |
@@ -47,9 +43,8 @@ jobs:
 
     - name: Build libhevtun
       if: steps.cache-libhevtun-restore.outputs.cache-hit != 'true'
-      run: |
-        bash compile-hevtun.sh
-    
+      run: bash compile-hevtun.sh
+
     - name: Save libhevtun
       if: steps.cache-libhevtun-restore.outputs.cache-hit != 'true'
       uses: actions/cache/save@v4
@@ -58,8 +53,7 @@ jobs:
         key: libhevtun-${{ runner.os }}-${{ env.NDK_HOME }}-${{ hashFiles('.git/modules/hev-socks5-tunnel/HEAD') }}-${{ hashFiles('compile-hevtun.sh') }}
 
     - name: Copy libhevtun
-      run: |
-        cp -r ${{ github.workspace }}/libs ${{ github.workspace }}/V2rayNG/app
+      run: cp -r ${{ github.workspace }}/libs ${{ github.workspace }}/V2rayNG/app
 
     - name: Fetch AndroidLibXrayLite tag
       run: |
@@ -72,58 +66,27 @@ jobs:
     - name: Download libv2ray
       uses: robinraju/release-downloader@v1.12
       with:
-        repository: '2dust/AndroidLibXrayLite'
+        repository: 2dust/AndroidLibXrayLite
         tag: ${{ env.CURRENT_TAG }}
-        fileName: 'libv2ray.aar'
+        fileName: libv2ray.aar
         out-file-path: V2rayNG/app/libs/
 
     - name: Setup Java
       uses: actions/setup-java@v5
       with:
-        distribution: 'temurin'
-        java-version: '21'
+        distribution: temurin
+        java-version: "21"
 
-    - name: Decode Keystore
-      uses: timheuer/base64-to-file@v1.2.4
-      id: android_keystore
-      with:
-        fileName: "android_keystore.jks"
-        encodedString: ${{ secrets.APP_KEYSTORE_BASE64 }}
-
-    - name: Build APK
+    - name: Build unsigned APKs
       run: |
         cd ${{ github.workspace }}/V2rayNG
         echo "sdk.dir=${ANDROID_HOME}" > local.properties
         chmod 755 gradlew
-        ./gradlew licenseFdroidReleaseReport
-        ./gradlew assembleRelease -Pandroid.injected.signing.store.file=${{ steps.android_keystore.outputs.filePath }} -Pandroid.injected.signing.store.password=${{ secrets.APP_KEYSTORE_PASSWORD }} -Pandroid.injected.signing.key.alias=${{ secrets.APP_KEYSTORE_ALIAS }} -Pandroid.injected.signing.key.password=${{ secrets.APP_KEY_PASSWORD }}
-    
-    - name: Upload arm64-v8a APK
-      uses: actions/upload-artifact@v7
-      if: ${{  success() }}
-      with:
-        name: arm64-v8a
-        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*arm64-v8a*.apk
+        ./gradlew assembleRelease
 
-    - name: Upload armeabi-v7a APK
+    - name: Upload release APKs
       uses: actions/upload-artifact@v7
-      if: ${{  success() }}
+      if: ${{ success() }}
       with:
-        name: armeabi-v7a
-        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*armeabi-v7a*.apk
-
-    - name: Upload x86 APK
-      uses: actions/upload-artifact@v7
-      if: ${{  success() }}
-      with:
-        name: x86-apk
-        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*x86*.apk
-
-    - name: Upload to release
-      uses: svenstaro/upload-release-action@v2
-      if: github.event.inputs.release_tag != ''
-      with:
-        file: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*.apk
-        tag: ${{ github.event.inputs.release_tag }}
-        file_glob: true
-        prerelease: true
+        name: release-apks
+        path: ${{ github.workspace }}/V2rayNG/app/build/outputs/apk/*/release/*.apk
