@@ -5,11 +5,11 @@ plugins {
 }
 
 android {
-    namespace = "com.v2ray.ang"
+    namespace = "next.v2ray.ang"
     compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.v2ray.ang"
+        applicationId = "next.v2ray.ang"
         minSdk = 24
         targetSdk = 36
         versionCode = 718
@@ -124,6 +124,7 @@ android {
     }
 
     buildFeatures {
+        aidl = true
         viewBinding = true
         buildConfig = true
     }
@@ -150,6 +151,8 @@ dependencies {
     implementation(libs.androidx.swiperefreshlayout)
     implementation(libs.androidx.viewpager2)
     implementation(libs.androidx.fragment)
+    implementation(libs.shizuku.api)
+    implementation(libs.shizuku.provider)
 
     // UI Libraries
     implementation(libs.material)

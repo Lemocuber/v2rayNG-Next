@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name" translatable="false">v2rayNG</string>
+    <string name="app_name" translatable="false">v2rayNG+</string>
+    <string name="app_display_name" translatable="false">v2rayNG Next</string>
     <string name="app_widget_name">Switch</string>
     <string name="app_tile_name">Switch</string>
     <string name="app_tile_first_use">First use of this feature, please use the app to add server</string>
@@ -142,8 +143,16 @@
     <string name="msg_downloading_content">Downloading content</string>
     <string name="menu_item_export_proxy_app">Export to Clipboard</string>
     <string name="menu_item_import_proxy_app">Import from Clipboard</string>
+    <string name="menu_item_show_system_apps">Show system apps</string>
     <string name="per_app_proxy_settings">Per-app settings</string>
     <string name="per_app_proxy_settings_enable">Enable per-app</string>
+    <string name="proxied_only_apps_settings">Proxied Only Apps</string>
+    <string name="proxied_only_apps_settings_enable">Enable POA</string>
+    <string name="switch_invert_mode">Invert Mode</string>
+    <string name="summary_proxied_only_apps">General: checked apps are enabled when VPN starts and disabled when VPN stops.\nInvert mode: checked apps are disabled when VPN starts and enabled when VPN stops.</string>
+    <string name="toast_shizuku_required">Shizuku permission and VPN mode are required for Proxied Only Apps</string>
+    <string name="toast_proxied_only_apps_apply_failed">Failed to apply POA</string>
+    <string name="toast_shizuku_denied">Shizuku permission denied</string>
 
     <!-- Preferences -->
     <string name="title_settings">Settings</string>
@@ -252,8 +261,8 @@
     <string name="title_source_code">Source code</string>
     <string name="title_oss_license">Open Source licenses</string>
     <string name="title_tg_channel">Telegram channel</string>
+    <string name="about_attribution">v2rayNG is the original project by 2dust. v2rayNG Next is a fork by Lemocuber with extended features.</string>
 
-    <string name="title_pref_promotion">Promotion</string>
 
     <string name="title_pref_auto_update_subscription">Automatic update subscriptions</string>
     <string name="summary_pref_auto_update_subscription">Update your subscriptions automatically at set intervals in the background. Depending on the device, this feature may not always work</string>

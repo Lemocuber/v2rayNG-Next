@@ -2,7 +2,7 @@
 <resources>
     <string name="app_widget_name">Kết nối ngay</string>
     <string name="app_tile_name">Kết nối ngay</string>
-    <string name="app_tile_first_use">Vui lòng thêm một cấu hình vào v2rayNG để sử dụng!</string>
+    <string name="app_tile_first_use">Vui lòng thêm một cấu hình vào v2rayNG Next để sử dụng!</string>
     <string name="navigation_drawer_open">Mở Menu ứng dụng</string>
     <string name="navigation_drawer_close">Đóng Menu ứng dụng</string>
     <string name="migration_success">Đã chuyển dữ liệu!</string>
@@ -11,17 +11,17 @@
     <string name="pull_down_to_refresh">Please pull down to refresh!</string>
 
     <!-- Notifications -->
-    <string name="notification_action_stop_v2ray">Ngắt kết nối v2rayNG</string>
-    <string name="toast_permission_denied">Vui lòng cấp quyền cần thiết cho v2rayNG! Bạn đã từ chối các quyền cần thiết như Camera hay Bộ nhớ?</string>
+    <string name="notification_action_stop_v2ray">Ngắt kết nối v2rayNG Next</string>
+    <string name="toast_permission_denied">Vui lòng cấp quyền cần thiết cho v2rayNG Next! Bạn đã từ chối các quyền cần thiết như Camera hay Bộ nhớ?</string>
     <string name="toast_permission_denied_notification">Unable to obtain the notification permission</string>
     <string name="notification_action_more">Nhấn để biết thêm...</string>
-    <string name="toast_services_start">Đang khởi động v2rayNG...</string>
-    <string name="toast_services_stop">Đã dừng v2rayNG!</string>
-    <string name="toast_services_success">Đã khởi động v2rayNG!</string>
-    <string name="toast_services_failure">Không thể khởi động v2rayNG, kiểm tra lại cấu hình!</string>
+    <string name="toast_services_start">Đang khởi động v2rayNG Next...</string>
+    <string name="toast_services_stop">Đã dừng v2rayNG Next!</string>
+    <string name="toast_services_success">Đã khởi động v2rayNG Next!</string>
+    <string name="toast_services_failure">Không thể khởi động v2rayNG Next, kiểm tra lại cấu hình!</string>
 
     <!--ServerActivity-->
-    <string name="title_server">v2rayNG</string>
+    <string name="title_server">v2rayNG Next</string>
     <string name="menu_item_add_config">Thêm cấu hình</string>
     <string name="menu_item_save_config">Lưu cấu hình</string>
     <string name="menu_item_edit_config">Edit configuration</string>
@@ -248,7 +248,6 @@
     <string name="title_source_code">Mã nguồn</string>
     <string name="title_oss_license">Open Source licenses</string>
     <string name="title_tg_channel">Kênh Telegram</string>
-    <string name="title_pref_promotion">Quảng bá server</string>
 
     <string name="title_pref_auto_update_subscription">Tự động cập nhật các gói đăng ký</string>
     <string name="summary_pref_auto_update_subscription">Tự động cập nhật các gói đăng ký của bạn ở trong nền với khoảng thời gian cố định. Tùy thiết bị, tính năng này có thể không luôn hoạt động đúng như mong đợi.</string>
@@ -304,7 +303,7 @@
     <string name="toast_fragment_not_available">Unable to locate current view</string>
     <string name="title_locate_selected_config">Locate the selected config</string>
 
-    <string name="tasker_start_service">Khởi động v2rayNG</string>
+    <string name="tasker_start_service">Khởi động v2rayNG Next</string>
     <string name="tasker_setting_confirm">Xác nhận</string>
 
     <!-- RoutingSettingActivity -->

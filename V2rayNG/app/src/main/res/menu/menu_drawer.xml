@@ -13,6 +13,10 @@
             android:icon="@drawable/ic_per_apps_24dp"
             android:title="@string/per_app_proxy_settings" />
         <item
+            android:id="@+id/proxied_only_apps_settings"
+            android:icon="@drawable/ic_proxied_only_apps_24dp"
+            android:title="@string/proxied_only_apps_settings" />
+        <item
             android:id="@+id/routing_setting"
             android:icon="@drawable/ic_routing_24dp"
             android:title="@string/routing_settings_title" />
@@ -27,10 +31,6 @@
     </group>
 
     <group android:id="@+id/group_id2">
-        <item
-            android:id="@+id/promotion"
-            android:icon="@drawable/ic_promotion_24dp"
-            android:title="@string/title_pref_promotion" />
         <item
             android:id="@+id/logcat"
             android:icon="@drawable/ic_logcat_24dp"
